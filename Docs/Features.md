@@ -9,7 +9,7 @@
   * Accent
   * Volume 
   * Sound wave type
-  *Gain
+  * Gain
 * Let user save audio values
 * Runtime sound generation
 * Random sound options button
