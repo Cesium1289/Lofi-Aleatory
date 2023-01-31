@@ -1,4 +1,4 @@
-#Lofi-Aleatory Features List
+#Lofi-Aleatory Features List#
 
 * UI - SMFL
 * User options to adjust 
