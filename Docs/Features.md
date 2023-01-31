@@ -4,7 +4,7 @@
 * User options to adjust 
   * Root key 
   * Beats per measure
-  *Beats per minute 
+  * Beats per minute 
   * Envelope
   * Accent
   * Volume 
