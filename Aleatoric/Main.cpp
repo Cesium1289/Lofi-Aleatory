@@ -3,7 +3,6 @@
 #include<cmath>
 #include<cstdlib>
 using namespace std;
-
 /*
 *Change the program arguments within this struct
 */
@@ -163,9 +162,7 @@ void GenerateSquareWave(float freqArray[], sf::SoundBuffer& squareWave, Argument
 	RampSamples(buffer, args.ramp);
 
 	//place sample into square wave buffer
-	squareWave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.bpm / 60));
-
-	
+	squareWave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.bpm / 60));	
 }
 
 //Set the amplitudes for the square and sine waves based on volume levels

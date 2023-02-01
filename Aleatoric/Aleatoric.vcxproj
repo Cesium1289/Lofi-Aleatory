@@ -142,7 +142,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="WaveParameters.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="WaveDashboard.cpp" />
+    <ClCompile Include="WaveGenerator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WaveParameters.h" />
+    <ClInclude Include="WaveDashboard.h" />
+    <ClInclude Include="WaveGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
