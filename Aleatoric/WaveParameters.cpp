@@ -18,7 +18,7 @@ WaveParameters::WaveParameters()
 }
 
 
-//Get amplitued based on given type of wave.
+//Get amplitude based on given type of wave.
 float WaveParameters::GetAmp(waveEnum waveType)
 {
 	if (waveType == sine) {

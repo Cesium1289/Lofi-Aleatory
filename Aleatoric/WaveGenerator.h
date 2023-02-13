@@ -23,5 +23,7 @@ private:
 
 	int CheckKeyValue(int rootKey, char& character);
 
+    void GenerateRandomWave(float frequency, sf::SoundBuffer& Wave);
+
 };
 
