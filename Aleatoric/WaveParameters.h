@@ -1,5 +1,12 @@
 #include<map>
-enum waveEnum { sine, saw, triangle, square };
+
+enum waveEnum {
+	sine = 1,
+	triangle = 2,
+	square = 3,
+	saw = 4
+};
+
 class WaveParameters
 {
 	public:
@@ -11,14 +18,17 @@ class WaveParameters
 		{
 			float waveTypeAmp = 5.0f;
 			float squareWaveAmp = 5.0f;
-			int rootKey = 45;
+			int sig = 8;
+			int rootKey = 52;
 			int beatsPerMeasure = 8;
-			float beatsPerMinute = 20.0f;
+			float beatsPerMinute = 120.0f;
 			float ramp = 0.5f;
 			float accent = 5.0f;
 			float volume = 8.0f;
 			char key = 'a';
-			waveEnum waveType = waveEnum::sine;
+			int scale = 1;
+			waveEnum waveType = sine;
+			bool random = true;
 		};
 		Parameters parameters;
 		std::multimap<const char, int> MidiKeyMap;
@@ -30,6 +40,14 @@ class WaveParameters
 		bool IsValidAccent(float val)const;
 		bool IsValidVolume(float val)const;
 		bool IsValidRootKey(int val)const;
+
+		void setRootKey(float);
+		void setBPM(float);
+		void setVolume(float);
+		void setRamp(float);
+		void setWaveType(const std::string&);
+		void setScaleType(const std::string&);
+		void setRandom();
 		
 };
 
