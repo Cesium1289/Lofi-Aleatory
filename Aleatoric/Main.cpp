@@ -1,14 +1,19 @@
 #include<SFML/Audio.hpp>
 #include<iostream>
-#include"WaveGenerator.h"
 #include <string>
+#include<cmath>
+#include<cstdlib>
+#include"WaveParameters.h"
 using namespace std;
 
 bool ParseArguments(WaveParameters & param, int argc,const char* argv[]);
 float ParseSubString(string& arg);
 void ParseStringToString(string& arg);
+const int NUM_SAMPLES = 48000;
+const int NUM_KEYS = 7;
 
-int main(int argc, const char* argv[])
+int main(int argc, char* argv[])
+
 {
 	WaveParameters args;
 	ParseArguments(args, argc, argv);
