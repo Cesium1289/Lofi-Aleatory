@@ -1,329 +1,97 @@
 #include<SFML/Audio.hpp>
 #include<iostream>
-#include<cmath>
-#include<cstdlib>
 #include"WaveGenerator.h"
+#include <string>
 using namespace std;
 
+bool ParseArguments(WaveParameters & param, int argc,const char* argv[]);
+float ParseSubString(string& arg);
+void ParseStringToString(string& arg);
 
-/*
-*Change the program arguments within this struct
-*/
-struct Arguments
+int main(int argc, const char* argv[])
 {
-	float squareWaveAmp = 0.0f;
-	float sineWaveAmp =0.0f;
-	int rootKey = 64;
-	int sig = 8;
-	float bpm = 240.0f;
-	float ramp = 0.5f;
-	float accent = 5.0f;
-	float volume = 8.0f;
-	char key = 'a';
-};
-
-void CalculateFrequency(float freqArray[], vector<int>& scaleArray, int RootKey);
-void fillMajorArray(vector<int>& scaleArray, char key);
-void GenerateSineWaves(float freqArray[], sf::SoundBuffer SineWaves[], Arguments& args);
-void GenerateSquareWave(float freqArray[], sf::SoundBuffer& squareWave, Arguments& args);
-float WaveFunc(float pos, int waveType);
-void GenerateWaveSample(float freqArray[], sf::SoundBuffer& triangleWave, Arguments& args, int waveType);
-
-void SetAmplitudes(Arguments& args);
-void RampSamples(vector<sf::Int16>& sample, float frac);
-int CheckKeyValue(int rootKey, char& character);
-bool ValidArguments(Arguments& args);
-
-const int NUM_SAMPLES = 48000;
-const int NUM_KEYS = 7;
-
-int main()
-{
-	sf::SoundBuffer sineSamples[NUM_KEYS]; 
-	sf::SoundBuffer sineSample;
-	sf::SoundBuffer sawSample;
-	sf::SoundBuffer squareSample;
-	sf::SoundBuffer triangleSample;
-	sf::Sound sound;
-	Arguments args;
-	vector<int> scaleArray;
-	float freqArray[NUM_KEYS];
-	
-	
-	if (ValidArguments(args))
-	{
-		SetAmplitudes(args);
-		fillMajorArray(scaleArray, args.key);
-		CalculateFrequency(freqArray, scaleArray, args.rootKey);
-		GenerateWaveSample(freqArray, sineSample, args, 1);
-		GenerateWaveSample(freqArray, squareSample, args, 2);
-		GenerateWaveSample(freqArray, triangleSample, args, 3);
-		GenerateWaveSample(freqArray, sawSample, args, 4);
-
-		WaveGenerator soundBox;
-		WaveParameters params;
-		soundBox.playWave(params);
-
-		/*
-		int i = 1;
-		while (1)
-		{
-			//check if sound is playing
-			while (sound.getStatus() == sf::Sound::Playing)		
-				sf::sleep(sf::milliseconds(100));
-
-			//check if square wave should be played
-			if (i % 4 == 0)
-			{
-				sound.setBuffer(sineSample);
-				sound.play();
-			}
-			else if (i % 4 == 1) {
-				sound.setBuffer(squareSample);
-				sound.play();
-			}
-			else if (i % 4 == 2)
-			{
-				sound.setBuffer(triangleSample);
-				sound.play();
-			}
-			else 
-			{
-				sound.setBuffer(sawSample);
-				sound.play();
-			}
-			++i;
-		}
-		*/
-	}
-
+	WaveParameters args;
+	ParseArguments(args, argc, argv);
+	WaveGenerator soundBox;
+	soundBox.play(args);
 }
 
-//Check if the values the user provided are valid
-bool ValidArguments(Arguments& args)
+bool ParseArguments(WaveParameters & param, int argc, const char* argv[])
 {
-	if (!CheckKeyValue(args.rootKey, args.key))
-		return false;
+	string* argvArray = new string[argc];
+	for (size_t i = 0; i < argc; i++)
+	{
+		argvArray[i] = argv[i];
+		cout << argvArray[i];
+	}
+
+	for (size_t i = 1; i < argc; i++) {
+		if (!argvArray[i].find("--root"))
+		{
+			param.setRootKey(ParseSubString(argvArray[i]));
+		}
 		
-	else if (args.sig < 1)
-	{
-		cout << "Enter a beats value greater than 1!\n";
-		return false;
+		else if (!argvArray[i].find("--bpm"))
+		{
+			param.setBPM(ParseSubString(argvArray[i]));
+
+		}
+		else if (!argvArray[i].find("--volume"))
+		{
+			param.setVolume(ParseSubString(argvArray[i]));
+
+		}
+		else if (!argvArray[i].find("--ramp"))
+		{
+			param.setRamp(ParseSubString(argvArray[i]));
+			cout << argvArray[i];
+
+		}
+		else if (!argvArray[i].find("--wave"))
+		{
+			ParseStringToString(argvArray[i]);
+			param.setWaveType(argvArray[i]);
+		}
+		else if (!argvArray[i].find("--scale"))
+		{
+			ParseStringToString(argvArray[i]);
+			param.setScaleType(argvArray[i]);
+		}
+		else if (!argvArray[i].find("--random"))
+		{
+			param.setRandom();
+		}
+		else
+		{
+			cout << "ERORR: invalid argument " << argv[i] << endl;
+			cout << "Closing program... \n";
+		}
 	}
-	else if (args.bpm < 0.1f)
-	{
-		cout << "Enter a bpm value greater than 0!\n";
-		return false;
-	}
-	else if (args.ramp < 0.0f || args.ramp > 0.5f)
-	{
-		cout << "Enter a ramp value that is between 0.0 - 0.5!\n";
-		return false;
-	}
-	else if (args.volume < 0.0f || args.volume > 10.0f)
-	{
-		cout << "Enter a volume value between 0.0 - 10.0!\n";
-		return false;
-	}
-	else if (args.accent < 0.0f || args.accent > 10.0f)
-	{
-		cout << "Enter a accent value between 0.0 - 10.0!\n";
-		return false;
-	}
+
 	return true;
 }
 
-//Calculate the freqency of the random keys that can be played
-void CalculateFrequency(float freqArray[], vector<int>& scaleArray, int rootKey)
+float ParseSubString(string& arg)
 {
-	int scaleOffset = 0;
+	size_t pos = arg.find("[");
+	arg.erase(0, pos + 1);
+	pos = arg.find("]");
+	arg.erase(pos);
 
-	for (size_t i = 0; i < NUM_KEYS + 1; i++)
+	try {
+		return stof(arg);
+	}
+	catch (invalid_argument const& error)
 	{
-		freqArray[i] = 440 * static_cast<float>(pow(2.0, ((rootKey + static_cast<float>(scaleArray.at(i) + scaleOffset) - 69) / 12)));
-		scaleOffset += scaleArray[i];
+		cout << "Invalid parameter value: " << error.what() << endl;
+		return -1.0;
 	}
 }
 
-void GenerateSineWaves(float freqArray[], sf::SoundBuffer SineWaves[], Arguments& args)
+void ParseStringToString(string& arg)
 {
-	vector<sf::Int16> buffer;
-
-	//generate sine waves
-	for (size_t i = 1; i < NUM_KEYS + 1; i++)
-	{
-		buffer.clear();
-
-		for (size_t j = 0; j < NUM_SAMPLES; j++)
-			buffer.push_back(10000 * args.sineWaveAmp * sin(2 * 3.14 * freqArray[i] * (static_cast<float>(j) / NUM_SAMPLES)));
-
-		//ramp the sample 
-		RampSamples(buffer, args.ramp);
-
-		//add sine wave to wave buffer
-		SineWaves[i - 1].loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.bpm / 60));
-	}
-}
-
-float WaveFunc(float pos, int type)
-{
-	//sine wave
-	if (type == 1)
-		return sin(pos * 2 * 3.14);
-	//square wave
-	else if (type == 2)
-		return (sin(pos*3.14*2) > 0) ?  1.0 : -1.0;
-	//saw wave
-	else if (type == 3)
-		return pos * 2 - 1;
-	//triangle wave
-	else if (type == 4)
-		return 1 - fabs(pos - 0.5) * 4;
-}
-
-
-//Given a type of wave, generate a sample and store in a buffer
-void GenerateWaveSample(float freqArray[], sf::SoundBuffer& Wave, Arguments& args, int waveType) {
-
-	vector<sf::Int16> buffer;
-
-	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		float pos = fmod((static_cast<float>(i)*freqArray[0])/ NUM_SAMPLES, 1.0);
-		buffer.push_back(10000 * WaveFunc(pos, waveType) * args.sineWaveAmp);
-	}
-
-	//ramp square wave sample
-	RampSamples(buffer, args.ramp);
-
-	//place sample into square wave buffer
-	Wave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.bpm/ 60));
-
-}
-
-void GenerateSquareWave(float freqArray[], sf::SoundBuffer& squareWave, Arguments& args)
-{
-	vector<sf::Int16> buffer;
-
-	//generate square wave
-	for (size_t i = 0; i < NUM_SAMPLES; i++)
-	{
-		if (sin(2 * 3.14 * freqArray[0] * (static_cast<float>(i) / NUM_SAMPLES)) > 0)
-			buffer.push_back(10000 * args.squareWaveAmp);
-		else
-			buffer.push_back(-10000 * args.squareWaveAmp);
-	}
-
-	//ramp square wave sample
-	RampSamples(buffer, args.ramp);
-
-	//place sample into square wave buffer
-	squareWave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.bpm / 60));	
-}
-
-//Set the amplitudes for the square and sine waves based on volume levels
-void SetAmplitudes(Arguments& args)
-{
-	args.squareWaveAmp =  pow(10,(-6 * (10 - args.accent) / 20));
-	args.sineWaveAmp = pow(10, (-6 * (10 - args.volume) / 20));
-}
-
-//Calculate the beat time for the attack and release time for the note envelope
-void RampSamples(vector<sf::Int16>& sample, float frac)
-{
-	int rampSamples = NUM_SAMPLES * frac;
-	float dampen;
-	float n = 0;
-	float temp;
-
-	//apply the left half of a triangle window to the first 'NUM_SAMPLES * frac' samples,
-	//where n is the current sample
-	for (size_t i = 0; i < rampSamples; i++)
-	{ 
-		//apply triangle window formula to sample and store that value into temp
-		temp = n - ((static_cast<float>(rampSamples)));
-		temp /= (static_cast<float>(rampSamples));
-
-		//calculate amount to dampen
-		dampen = 1 - abs(temp);
-
-		//dampen audio sample
-		sample.at(i) *= dampen;
-		++n;
-	}
-	
-	n = rampSamples - 1;
-
-	//apply the right half of a triangle window to last 'NUM_SAMPLES * frac' samples,
-	//where n is the current sample
-	for (size_t i = NUM_SAMPLES - rampSamples; i < NUM_SAMPLES; i++)
-	{
-		//apply triangle window formula to sample and store that value into temp
-		temp = n - ((static_cast<float>(rampSamples)));
-		temp /= (static_cast<float>(rampSamples));
-
-		//calculate amount to dampen
-		dampen = 1 - abs(temp);
-
-		//dampen audio sample
-		sample.at(i) *= dampen;
-		--n;
-	}
-}
-
-//Fill the scaleVector with the proper key offsets so a proper frequency can be acquired for 
-//each key
-void fillMajorArray(vector<int>& scaleArray, char key)
-{
-	switch (key)
-	{
-	case('a'):
-		scaleArray.insert(scaleArray.end(), { 0,2,1,2,2,1,2,2 });
-		break;
-	case('b'):
-		scaleArray.insert(scaleArray.end(), { 0,1,2,2,1,2,2,2 });
-		break;
-	case('c'):
-		scaleArray.insert(scaleArray.end(), { 0,2,2,1,2,2,2,1 });
-		break;
-	case('d'):
-		scaleArray.insert(scaleArray.end(), { 0,2,1,2,2,2,1,2 });
-		break;
-	case('e'):
-		scaleArray.insert(scaleArray.end(), { 0,1,2,2,2,1,2,2 });
-		break;
-	case('f'):
-		scaleArray.insert(scaleArray.end(), { 0,2,2,2,1,2,2,1 });
-		break;
-	case('g'):
-		scaleArray.insert(scaleArray.end(), { 0,2,2,1,2,2,1,2 });
-		break;
-	default:
-		cout << "ERROR: unable to generate major array\n";
-		break;
-	}
-}
-
-//Check if the MIDI value the user gave is valid. If so, assign that value with a root key
-int CheckKeyValue(int rootKey, char& character)
-{
-	if (rootKey == 21 || rootKey == 33 || rootKey == 45 || rootKey == 57 || rootKey == 69 || rootKey == 81 || rootKey == 93 || rootKey == 105)
-		character = 'a';
-	else if (rootKey == 23 || rootKey == 35 || rootKey == 47 || rootKey == 59 || rootKey == 71 || rootKey == 83 || rootKey == 95 || rootKey == 107)
-		character = 'b';
-	else if (rootKey == 24 || rootKey == 36 || rootKey == 48 || rootKey == 60 || rootKey == 72 || rootKey == 84 || rootKey == 96 || rootKey == 108)
-		character = 'c';
-	else if (rootKey == 26 || rootKey == 38 || rootKey == 50 || rootKey == 62 || rootKey == 74 || rootKey == 86 || rootKey == 98 || rootKey == 110)
-		character = 'd';
-	else if (rootKey == 28 || rootKey == 40 || rootKey == 52 || rootKey == 64 || rootKey == 76 || rootKey == 88 || rootKey == 100 || rootKey == 112)
-		character = 'e';
-	else if (rootKey == 29 || rootKey == 41 || rootKey == 53 || rootKey == 65 || rootKey == 77 || rootKey == 89 || rootKey == 101 || rootKey == 113)
-		character = 'f';
-	else if (rootKey == 31 || rootKey == 43 || rootKey == 55 || rootKey == 67 || rootKey == 79 || rootKey == 91 || rootKey == 103 || rootKey == 115)
-		character = 'g';
-	else
-	{
-		cout << "\n\nINVALID KEY VALUE: " << rootKey << ". Enter a valid MIDI note between 21-115! ";
-		return 0;
-	}
-	return 1;
+	size_t pos = arg.find("[");
+	arg.erase(0, pos + 1);
+	pos = arg.find("]");
+	arg.erase(pos);
 }
