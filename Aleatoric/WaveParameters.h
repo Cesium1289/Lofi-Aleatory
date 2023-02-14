@@ -1,5 +1,14 @@
 #include<map>
-enum waveEnum { sine, saw, triangle, square };
+#include <string>
+using namespace std;
+
+enum waveEnum {
+	sine = 1,
+	triangle = 2,
+	square = 3,
+	saw = 4
+};
+
 class WaveParameters
 {
 	friend class WaveGenerator;
@@ -7,7 +16,17 @@ class WaveParameters
 		WaveParameters();
 		bool AreValidParameters()const;
 		bool SetRootKeyCharacter(int val);
+		bool ParseArguments(WaveParameters& param, int argc, const char* argv[]);
+		float ParseSubString(string& arg);
+		void ParseStringToString(string& arg);
 
+		void setRootKey(float);
+		void setBPM(float);
+		void setVolume(float);
+		void setRamp(float);
+		void setWaveType(const std::string&);
+		void setScaleType(const std::string&);
+		void setRandom();
 	private:
 		struct Parameters
 		{
@@ -24,7 +43,9 @@ class WaveParameters
 			float accent = 5.0f;
 			float volume = 8.0f;
 			char key = 'a';
-			waveEnum waveType = waveEnum::sine;
+			int scale = 1;
+			waveEnum waveType = sine;
+			bool random = true;
 		};
 
 	public:
