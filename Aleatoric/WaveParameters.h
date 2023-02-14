@@ -1,4 +1,6 @@
 #include<map>
+#include <string>
+using namespace std;
 
 enum waveEnum {
 	sine = 1,
@@ -16,6 +18,14 @@ class WaveParameters
 		bool ParseArguments(WaveParameters& param, int argc, const char* argv[]);
 		float ParseSubString(string& arg);
 		void ParseStringToString(string& arg);
+
+		void setRootKey(float);
+		void setBPM(float);
+		void setVolume(float);
+		void setRamp(float);
+		void setWaveType(const std::string&);
+		void setScaleType(const std::string&);
+		void setRandom();
 	private:
 		struct Parameters
 		{
@@ -43,14 +53,6 @@ class WaveParameters
 		bool IsValidAccent(float val)const;
 		bool IsValidVolume(float val)const;
 		bool IsValidRootKey(int val)const;
-
-		void setRootKey(float);
-		void setBPM(float);
-		void setVolume(float);
-		void setRamp(float);
-		void setWaveType(const std::string&);
-		void setScaleType(const std::string&);
-		void setRandom();
 		
 };
 

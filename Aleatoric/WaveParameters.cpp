@@ -115,7 +115,7 @@ bool WaveParameters::SetRootKeyCharacter(int val)
 	return false;
 }
 
-bool ParseArguments(WaveParameters& param, int argc, const char* argv[])
+bool WaveParameters::ParseArguments(WaveParameters& param, int argc, const char* argv[])
 {
 	string* argvArray = new string[argc];
 	for (size_t i = 0; i < argc; i++)
@@ -170,7 +170,7 @@ bool ParseArguments(WaveParameters& param, int argc, const char* argv[])
 	return true;
 }
 
-float ParseSubString(string& arg)
+float WaveParameters::ParseSubString(string& arg)
 {
 	size_t pos = arg.find("[");
 	arg.erase(0, pos + 1);
@@ -187,7 +187,7 @@ float ParseSubString(string& arg)
 	}
 }
 
-void ParseStringToString(string& arg)
+void WaveParameters::ParseStringToString(string& arg)
 {
 	size_t pos = arg.find("[");
 	arg.erase(0, pos + 1);
@@ -195,3 +195,54 @@ void ParseStringToString(string& arg)
 	arg.erase(pos);
 }
 
+
+void WaveParameters::setRootKey(float rootKey)
+{
+	parameters.rootKey = rootKey;
+}
+
+void WaveParameters::setBPM(float bpm)
+{
+	parameters.beatsPerMinute = bpm;
+}
+
+void WaveParameters::setVolume(float vol)
+{
+	parameters.volume = vol;
+}
+
+void WaveParameters::setRamp(float ramp)
+{
+	parameters.ramp = ramp;
+}
+
+void WaveParameters::setWaveType(const std::string& type)
+{
+	if (type == "sine")
+		parameters.waveType = sine;
+	else if (type == "square")
+		parameters.waveType = square;
+	else if (type == "saw")
+		parameters.waveType = saw;
+	else if (type == "triangle")
+		parameters.waveType = triangle;
+	else
+		std::cout << "Invalid wave type";
+}
+
+void WaveParameters::setScaleType(const std::string& type)
+{
+	if (type == "major")
+		parameters.scale = 1;
+	else if (type == "minor")
+		parameters.scale = 2;
+	else if (type == "pent")
+		parameters.scale = 3;
+	else
+		std::cout << "Invalid scale type. Enter either 'major' or 'minor'";
+}
+
+void WaveParameters::setRandom()
+{
+	parameters.random = true;
+}
