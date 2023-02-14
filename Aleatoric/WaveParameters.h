@@ -13,6 +13,9 @@ class WaveParameters
 		WaveParameters();
 		bool AreValidParameters()const;
 		bool SetRootKeyCharacter(int val);
+		bool ParseArguments(WaveParameters& param, int argc, const char* argv[]);
+		float ParseSubString(string& arg);
+		void ParseStringToString(string& arg);
 	private:
 		struct Parameters
 		{
