@@ -1,24 +1,47 @@
 #include<map>
-enum waveEnum { sine, saw, triangle, square };
+#include <string>
+using namespace std;
+
+enum waveEnum {
+	sine = 1,
+	triangle = 2,
+	square = 3,
+	saw = 4
+};
+
 class WaveParameters
 {
 	public:
 		WaveParameters();
 		bool AreValidParameters()const;
 		bool SetRootKeyCharacter(int val);
+		bool ParseArguments(WaveParameters& param, int argc, const char* argv[]);
+		float ParseSubString(string& arg);
+		void ParseStringToString(string& arg);
+
+		void setRootKey(float);
+		void setBPM(float);
+		void setVolume(float);
+		void setRamp(float);
+		void setWaveType(const std::string&);
+		void setScaleType(const std::string&);
+		void setRandom();
 	private:
 		struct Parameters
 		{
 			float waveTypeAmp = 5.0f;
 			float squareWaveAmp = 5.0f;
-			int rootKey = 45;
+			int sig = 8;
+			int rootKey = 52;
 			int beatsPerMeasure = 8;
-			float beatsPerMinute = 20.0f;
+			float beatsPerMinute = 120.0f;
 			float ramp = 0.5f;
 			float accent = 5.0f;
 			float volume = 8.0f;
 			char key = 'a';
-			waveEnum waveType = waveEnum::sine;
+			int scale = 1;
+			waveEnum waveType = sine;
+			bool random = true;
 		};
 		Parameters parameters;
 		std::multimap<const char, int> MidiKeyMap;

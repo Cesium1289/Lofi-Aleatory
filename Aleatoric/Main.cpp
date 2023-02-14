@@ -2,6 +2,7 @@
 #include<iostream>
 #include<cmath>
 #include<cstdlib>
+#include"WaveParameters.h"
 using namespace std;
 /*
 *Change the program arguments within this struct
@@ -28,10 +29,11 @@ void RampSamples(vector<sf::Int16>& sample, float frac);
 int CheckKeyValue(int rootKey, char& character);
 bool ValidArguments(Arguments& args);
 
+
 const int NUM_SAMPLES = 48000;
 const int NUM_KEYS = 7;
 
-int main()
+int main(int argc, char* argv[])
 {
 	sf::SoundBuffer sineSamples[NUM_KEYS]; 
 	sf::SoundBuffer squareSample;
@@ -272,3 +274,4 @@ int CheckKeyValue(int rootKey, char& character)
 	}
 	return 1;
 }
+

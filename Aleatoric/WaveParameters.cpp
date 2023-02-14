@@ -1,5 +1,6 @@
 #include "WaveParameters.h"
 #include<iostream>
+using std::cout;
 const int MIN_BEATS_PER_MEASURE = 1;
 const float MIN_BEATS_PER_MINUTE = 0.1f;
 const float MAX_RAMP = 0.5f;
@@ -114,3 +115,134 @@ bool WaveParameters::SetRootKeyCharacter(int val)
 	return false;
 }
 
+bool WaveParameters::ParseArguments(WaveParameters& param, int argc, const char* argv[])
+{
+	string* argvArray = new string[argc];
+	for (size_t i = 0; i < argc; i++)
+	{
+		argvArray[i] = argv[i];
+		cout << argvArray[i];
+	}
+
+	for (size_t i = 1; i < argc; i++) {
+		if (!argvArray[i].find("--root"))
+		{
+			param.setRootKey(ParseSubString(argvArray[i]));
+		}
+
+		else if (!argvArray[i].find("--bpm"))
+		{
+			param.setBPM(ParseSubString(argvArray[i]));
+
+		}
+		else if (!argvArray[i].find("--volume"))
+		{
+			param.setVolume(ParseSubString(argvArray[i]));
+
+		}
+		else if (!argvArray[i].find("--ramp"))
+		{
+			param.setRamp(ParseSubString(argvArray[i]));
+			cout << argvArray[i];
+
+		}
+		else if (!argvArray[i].find("--wave"))
+		{
+			ParseStringToString(argvArray[i]);
+			param.setWaveType(argvArray[i]);
+		}
+		else if (!argvArray[i].find("--scale"))
+		{
+			ParseStringToString(argvArray[i]);
+			param.setScaleType(argvArray[i]);
+		}
+		else if (!argvArray[i].find("--random"))
+		{
+			param.setRandom();
+		}
+		else
+		{
+			cout << "ERORR: invalid argument " << argv[i] << endl;
+			cout << "Closing program... \n";
+		}
+	}
+
+	return true;
+}
+
+float WaveParameters::ParseSubString(string& arg)
+{
+	size_t pos = arg.find("[");
+	arg.erase(0, pos + 1);
+	pos = arg.find("]");
+	arg.erase(pos);
+
+	try {
+		return stof(arg);
+	}
+	catch (invalid_argument const& error)
+	{
+		cout << "Invalid parameter value: " << error.what() << endl;
+		return -1.0;
+	}
+}
+
+void WaveParameters::ParseStringToString(string& arg)
+{
+	size_t pos = arg.find("[");
+	arg.erase(0, pos + 1);
+	pos = arg.find("]");
+	arg.erase(pos);
+}
+
+
+void WaveParameters::setRootKey(float rootKey)
+{
+	parameters.rootKey = rootKey;
+}
+
+void WaveParameters::setBPM(float bpm)
+{
+	parameters.beatsPerMinute = bpm;
+}
+
+void WaveParameters::setVolume(float vol)
+{
+	parameters.volume = vol;
+}
+
+void WaveParameters::setRamp(float ramp)
+{
+	parameters.ramp = ramp;
+}
+
+void WaveParameters::setWaveType(const std::string& type)
+{
+	if (type == "sine")
+		parameters.waveType = sine;
+	else if (type == "square")
+		parameters.waveType = square;
+	else if (type == "saw")
+		parameters.waveType = saw;
+	else if (type == "triangle")
+		parameters.waveType = triangle;
+	else
+		std::cout << "Invalid wave type";
+}
+
+void WaveParameters::setScaleType(const std::string& type)
+{
+	if (type == "major")
+		parameters.scale = 1;
+	else if (type == "minor")
+		parameters.scale = 2;
+	else if (type == "pent")
+		parameters.scale = 3;
+	else
+		std::cout << "Invalid scale type. Enter either 'major' or 'minor'";
+}
+
+void WaveParameters::setRandom()
+{
+	parameters.random = true;
+}
