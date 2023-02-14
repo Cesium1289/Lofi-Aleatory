@@ -4,6 +4,7 @@
 #include<cstdlib>
 #include"WaveParameters.h"
 using namespace std;
+
 /*
 *Change the program arguments within this struct
 */
@@ -11,7 +12,7 @@ struct Arguments
 {
 	float squareWaveAmp = 0.0f;
 	float sineWaveAmp =0.0f;
-	int rootKey = 45;
+	int rootKey = 64;
 	int sig = 8;
 	float bpm = 20.0f;
 	float ramp = 0.5f;
@@ -24,6 +25,8 @@ void CalculateFrequency(float freqArray[], vector<int>& scaleArray, int RootKey)
 void fillMajorArray(vector<int>& scaleArray, char key);
 void GenerateSineWaves(float freqArray[], sf::SoundBuffer SineWaves[], Arguments& args);
 void GenerateSquareWave(float freqArray[], sf::SoundBuffer& squareWave, Arguments& args);
+float WaveFunc(float pos, int waveType);
+void GenerateWaveSample(float freqArray[], sf::SoundBuffer& triangleWave, Arguments& args, int waveType);
 void SetAmplitudes(Arguments& args);
 void RampSamples(vector<sf::Int16>& sample, float frac);
 int CheckKeyValue(int rootKey, char& character);
@@ -36,28 +39,32 @@ const int NUM_KEYS = 7;
 int main(int argc, char* argv[])
 {
 	sf::SoundBuffer sineSamples[NUM_KEYS]; 
+	sf::SoundBuffer sineSample;
+	sf::SoundBuffer sawSample;
 	sf::SoundBuffer squareSample;
+	sf::SoundBuffer triangleSample;
 	sf::Sound sound;
 	Arguments args;
 	vector<int> scaleArray;
 	float freqArray[NUM_KEYS];
+	
 	
 	if (ValidArguments(args))
 	{
 		SetAmplitudes(args);
 		fillMajorArray(scaleArray, args.key);
 		CalculateFrequency(freqArray, scaleArray, args.rootKey);
-		GenerateSineWaves(freqArray, sineSamples, args);
-		GenerateSquareWave(freqArray, squareSample, args);
-		cout << "\n-_-_-Values used-_-_-\n";
-		cout << "Root: " << args.rootKey << endl;
-		cout << "Beats per measure: " << args.sig << endl;
-		cout << "BPM: " << args.bpm << endl;
-		cout << "Ramp: " << args.ramp << endl;
-		cout << "Accent: " << args.accent << endl;
-		cout << "Volume: " << args.volume << endl;
-		int i = 1;
+		GenerateWaveSample(freqArray, sineSample, args, 1);
+		GenerateWaveSample(freqArray, squareSample, args, 2);
+		GenerateWaveSample(freqArray, triangleSample, args, 3);
+		GenerateWaveSample(freqArray, sawSample, args, 4);
 
+		
+		WaveParameters params;
+		
+
+		
+		int i = 1;
 		while (1)
 		{
 			//check if sound is playing
@@ -65,20 +72,30 @@ int main(int argc, char* argv[])
 				sf::sleep(sf::milliseconds(100));
 
 			//check if square wave should be played
-			if (i == args.sig)
+			if (i % 4 == 0)
 			{
+				sound.setBuffer(sineSample);
+				sound.play();
+			}
+			else if (i % 4 == 1) {
 				sound.setBuffer(squareSample);
 				sound.play();
-				i = 0;
 			}
-			else
+			else if (i % 4 == 2)
 			{
-				sound.setBuffer(sineSamples[rand() % NUM_KEYS]);
+				sound.setBuffer(triangleSample);
+				sound.play();
+			}
+			else 
+			{
+				sound.setBuffer(sawSample);
 				sound.play();
 			}
 			++i;
 		}
+		
 	}
+
 }
 
 //Check if the values the user provided are valid
@@ -145,6 +162,41 @@ void GenerateSineWaves(float freqArray[], sf::SoundBuffer SineWaves[], Arguments
 		//add sine wave to wave buffer
 		SineWaves[i - 1].loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.bpm / 60));
 	}
+}
+
+float WaveFunc(float pos, int type)
+{
+	//sine wave
+	if (type == 1)
+		return sin(pos * 2 * 3.14);
+	//square wave
+	else if (type == 2)
+		return (sin(pos*3.14*2) > 0) ?  1.0 : -1.0;
+	//saw wave
+	else if (type == 3)
+		return pos * 2 - 1;
+	//triangle wave
+	else if (type == 4)
+		return 1 - fabs(pos - 0.5) * 4;
+}
+
+
+//Given a type of wave, generate a sample and store in a buffer
+void GenerateWaveSample(float freqArray[], sf::SoundBuffer& Wave, Arguments& args, int waveType) {
+
+	vector<sf::Int16> buffer;
+
+	for (size_t i = 0; i < NUM_SAMPLES; i++) {
+		float pos = fmod((static_cast<float>(i)*freqArray[0])/ NUM_SAMPLES, 1.0);
+		buffer.push_back(10000 * WaveFunc(pos, waveType) * args.sineWaveAmp);
+	}
+
+	//ramp square wave sample
+	RampSamples(buffer, args.ramp);
+
+	//place sample into square wave buffer
+	Wave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.bpm/ 60));
+
 }
 
 void GenerateSquareWave(float freqArray[], sf::SoundBuffer& squareWave, Arguments& args)

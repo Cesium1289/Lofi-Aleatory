@@ -1,5 +1,13 @@
-#include "WaveParameters.h"
+#include "WaveGenerator.h"
+#include<SFML/Audio.hpp>
 #include<iostream>
+#include<cmath>
+#include<cstdlib>
+#include <stdlib.h>
+using namespace std;
+
+const int NUM_SAMPLES = 48000;
+const int NUM_KEYS = 7;
 using std::cout;
 const int MIN_BEATS_PER_MEASURE = 1;
 const float MIN_BEATS_PER_MINUTE = 0.1f;
@@ -9,11 +17,14 @@ const float MAX_ACCENT = 10.0f;
 
 WaveParameters::WaveParameters()
 {
-	parameters.waveTypeAmp = 0.0f;
-	parameters.squareWaveAmp = 0.0f;
+	parameters.waveTypeAmp = 3.0f;
+	parameters.squareWaveAmp = 3.0f;
+	parameters.sineWaveAmp = 3.0f;
+	parameters.triangleWaveAmp = 3.0f;
+	parameters.sawWaveAmp = 3.0f;
 	parameters.rootKey = 45;
 	parameters.beatsPerMeasure = 8;
-	parameters.beatsPerMinute = 20.0f;
+	parameters.beatsPerMinute = 120.0f;
 	parameters.ramp = 0.5f;
 	parameters.accent = 5.0f;
 	parameters.volume = 8.0f;
@@ -196,6 +207,30 @@ void WaveParameters::ParseStringToString(string& arg)
 }
 
 
+void WaveParameters::GenerateRandomWave(float frequency, sf::SoundBuffer& Wave)
+{
+	std::vector<sf::Int16> buffer;
+
+	// Create random BPM for wave
+	// EXTERNAL CITATION: https://stackoverflow.com/questions/686353/random-float-number-generation
+	srand(static_cast <unsigned> (time(0)));
+	float randBPM = 1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 240 - 1));
+	// Random wave type between 1 and 4
+	int randWaveType = rand() % 4 + 1;
+
+	for (size_t i = 0; i < NUM_SAMPLES; i++) {
+		float pos = fmod((static_cast<float>(i) * frequency) / NUM_SAMPLES, 1.0);
+		buffer.push_back(10000 * WaveFunc(pos, randWaveType) * 3.0f);
+	}
+
+	//ramp square wave sample
+	RampSamples(buffer, 0.5f);
+
+	//place sample into square wave buffer
+	Wave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (randBPM / 60));
+}
+
+
 void WaveParameters::setRootKey(float rootKey)
 {
 	parameters.rootKey = rootKey;
@@ -245,4 +280,78 @@ void WaveParameters::setScaleType(const std::string& type)
 void WaveParameters::setRandom()
 {
 	parameters.random = true;
+}
+
+float WaveParameters::GetAmp(waveEnum)
+{
+	return 0.0f;
+}
+
+float WaveParameters::GetRamp()
+{
+	return 0.0f;
+}
+
+float WaveParameters::GetBPM()
+{
+	return 0.0f;
+}
+
+float WaveParameters::WaveFunc(float pos, int type)
+{
+	//sine wave
+	if (type == 1)
+		return sin(pos * 2 * 3.14);
+	//square wave
+	else if (type == 2)
+		return (sin(pos * 3.14 * 2) > 0) ? 1.0 : -1.0;
+	//saw wave
+	else if (type == 3)
+		return pos * 2 - 1;
+	//triangle wave
+	else if (type == 4)
+		return 1 - fabs(pos - 0.5) * 4;
+}
+
+//Calculate the beat time for the attack and release time for the note envelope
+void WaveParameters::RampSamples(vector<sf::Int16>& sample, float frac)
+{
+	int rampSamples = NUM_SAMPLES * frac;
+	float dampen;
+	float n = 0;
+	float temp;
+
+	//apply the left half of a triangle window to the first 'NUM_SAMPLES * frac' samples,
+	//where n is the current sample
+	for (size_t i = 0; i < rampSamples; i++)
+	{
+		//apply triangle window formula to sample and store that value into temp
+		temp = n - ((static_cast<float>(rampSamples)));
+		temp /= (static_cast<float>(rampSamples));
+
+		//calculate amount to dampen
+		dampen = 1 - abs(temp);
+
+		//dampen audio sample
+		sample.at(i) *= dampen;
+		++n;
+	}
+
+	n = rampSamples - 1;
+
+	//apply the right half of a triangle window to last 'NUM_SAMPLES * frac' samples,
+	//where n is the current sample
+	for (size_t i = NUM_SAMPLES - rampSamples; i < NUM_SAMPLES; i++)
+	{
+		//apply triangle window formula to sample and store that value into temp
+		temp = n - ((static_cast<float>(rampSamples)));
+		temp /= (static_cast<float>(rampSamples));
+
+		//calculate amount to dampen
+		dampen = 1 - abs(temp);
+
+		//dampen audio sample
+		sample.at(i) *= dampen;
+		--n;
+	}
 }

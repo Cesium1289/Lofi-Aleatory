@@ -1,5 +1,7 @@
 #include<map>
 #include <string>
+#include<vector>
+#include<SFML/Audio.hpp>
 using namespace std;
 
 enum waveEnum {
@@ -11,6 +13,7 @@ enum waveEnum {
 
 class WaveParameters
 {
+	friend class WaveGenerator;
 	public:
 		WaveParameters();
 		bool AreValidParameters()const;
@@ -18,7 +21,7 @@ class WaveParameters
 		bool ParseArguments(WaveParameters& param, int argc, const char* argv[]);
 		float ParseSubString(string& arg);
 		void ParseStringToString(string& arg);
-
+		void GenerateRandomWave(float frequency, sf::SoundBuffer& Wave);
 		void setRootKey(float);
 		void setBPM(float);
 		void setVolume(float);
@@ -26,13 +29,21 @@ class WaveParameters
 		void setWaveType(const std::string&);
 		void setScaleType(const std::string&);
 		void setRandom();
+		float GetAmp(waveEnum);
+		float GetRamp();
+		float GetBPM();
+		void RampSamples(vector<sf::Int16>& sample, float frac);
+		float WaveFunc(float pos, int type);
 	private:
 		struct Parameters
 		{
 			float waveTypeAmp = 5.0f;
+			float sineWaveAmp = 5.0f;
 			float squareWaveAmp = 5.0f;
+			float triangleWaveAmp = 5.0f;
+			float sawWaveAmp = 5.0f;
 			int sig = 8;
-			int rootKey = 52;
+			int rootKey = 45;
 			int beatsPerMeasure = 8;
 			float beatsPerMinute = 120.0f;
 			float ramp = 0.5f;
@@ -43,9 +54,9 @@ class WaveParameters
 			waveEnum waveType = sine;
 			bool random = true;
 		};
+	
 		Parameters parameters;
 		std::multimap<const char, int> MidiKeyMap;
-
 		void MapMidiValues();
 		bool IsValidBeatsPerMeasure(int val)const;
 		bool IsValidBeatsPerMinute(float val)const;
@@ -53,6 +64,5 @@ class WaveParameters
 		bool IsValidAccent(float val)const;
 		bool IsValidVolume(float val)const;
 		bool IsValidRootKey(int val)const;
-		
 };
 
