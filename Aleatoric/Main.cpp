@@ -5,7 +5,6 @@
 #include"WaveParameters.h"
 using namespace std;
 
-
 /*
 *Change the program arguments within this struct
 */
@@ -15,7 +14,7 @@ struct Arguments
 	float sineWaveAmp =0.0f;
 	int rootKey = 64;
 	int sig = 8;
-	float bpm = 240.0f;
+	float bpm = 20.0f;
 	float ramp = 0.5f;
 	float accent = 5.0f;
 	float volume = 8.0f;
@@ -28,7 +27,6 @@ void GenerateSineWaves(float freqArray[], sf::SoundBuffer SineWaves[], Arguments
 void GenerateSquareWave(float freqArray[], sf::SoundBuffer& squareWave, Arguments& args);
 float WaveFunc(float pos, int waveType);
 void GenerateWaveSample(float freqArray[], sf::SoundBuffer& triangleWave, Arguments& args, int waveType);
-
 void SetAmplitudes(Arguments& args);
 void RampSamples(vector<sf::Int16>& sample, float frac);
 int CheckKeyValue(int rootKey, char& character);
@@ -61,11 +59,11 @@ int main(int argc, char* argv[])
 		GenerateWaveSample(freqArray, triangleSample, args, 3);
 		GenerateWaveSample(freqArray, sawSample, args, 4);
 
-		WaveGenerator soundBox;
+		
 		WaveParameters params;
-		soundBox.playWave(params);
+		
 
-		/*
+		
 		int i = 1;
 		while (1)
 		{
@@ -95,7 +93,7 @@ int main(int argc, char* argv[])
 			}
 			++i;
 		}
-		*/
+		
 	}
 
 }
