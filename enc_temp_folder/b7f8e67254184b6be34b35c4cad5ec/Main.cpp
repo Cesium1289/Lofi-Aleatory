@@ -9,6 +9,72 @@
 using namespace std;
 
 
+//int main(int argc, char* argv[])
+//{
+//	sf::SoundBuffer sineSamples[NUM_KEYS]; 
+//	sf::SoundBuffer sineSample;
+//	sf::SoundBuffer sawSample;
+//	sf::SoundBuffer squareSample;
+//	sf::SoundBuffer triangleSample;
+//	sf::Sound sound;
+//	Arguments args;
+//	vector<int> scaleArray;
+//	float freqArray[NUM_KEYS];
+//	
+//	
+//	if (ValidArguments(args))
+//	{
+//		SetAmplitudes(args);
+//		fillMajorArray(scaleArray, args.key);
+//		CalculateFrequency(freqArray, scaleArray, args.rootKey);
+//		GenerateWaveSample(freqArray, sineSample, args, 1);
+//		GenerateWaveSample(freqArray, squareSample, args, 2);
+//		GenerateWaveSample(freqArray, triangleSample, args, 3);
+//		GenerateWaveSample(freqArray, sawSample, args, 4);
+//
+//		
+//		WaveParameters params;
+//		
+//
+//		
+//		int i = 1;
+//		while (1)
+//		{
+//			//check if sound is playing
+//			while (sound.getStatus() == sf::Sound::Playing)		
+//				sf::sleep(sf::milliseconds(100));
+//
+//			//check if square wave should be played
+//			if (i % 4 == 0)
+//			{
+//				sound.setBuffer(sineSample);
+//				sound.play();
+//			}
+//			else if (i % 4 == 1) {
+//				sound.setBuffer(squareSample);
+//				sound.play();
+//			}
+//			else if (i % 4 == 2)
+//			{
+//				sound.setBuffer(triangleSample);
+//				sound.play();
+//			}
+//			else 
+//			{
+//				sound.setBuffer(sawSample);
+//				sound.play();
+//			}
+//			++i;
+//		}
+//		
+//	}
+//
+//}
+
+
+
+
+
 sf::Color hex2color(const std::string& hexcolor)
 {
 	sf::Color color = sf::Color::Black;
