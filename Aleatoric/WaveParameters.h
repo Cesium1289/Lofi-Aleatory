@@ -32,7 +32,7 @@ class WaveParameters
 		void setRamp(float);
 		void setWaveType(const std::string&);
 		void setScaleType(const std::string&);
-		void setRandom();
+		void setRandom(bool);
 		float GetRamp();
 		float GetBPM();
 		void RampSamples(vector<sf::Int16>& sample, float frac);
@@ -43,7 +43,6 @@ class WaveParameters
 			int rootKey;
 			float beatsPerMinute;
 			float ramp;
-			float accent;
 			float volume;
 			char key;
 			int scale;

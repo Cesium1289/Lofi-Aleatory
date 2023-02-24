@@ -7,20 +7,19 @@
 
 const int NUM_SAMPLES = 48000;
 const int NUM_KEYS = 7;
-const int MIN_BEATS_PER_MEASURE = 1;
 const float MIN_BEATS_PER_MINUTE = 0.1f;
 const float MAX_RAMP = 0.5f;
 const float MAX_VOLUME = 10.0f;
-const float MAX_ACCENT = 10.0f;
 using std::cout;
 using std::cerr;
+using std::invalid_argument;
+using std::endl;
 
 WaveParameters::WaveParameters()
 {
 	parameters.rootKey = 45;
 	parameters.beatsPerMinute = 20.0f;
 	parameters.ramp = 0.5f;
-	parameters.accent = 5.0f;
 	parameters.volume = 8.0f;
 	parameters.key = 'a';
 	parameters.waveType = saw;
@@ -33,7 +32,6 @@ bool WaveParameters::AreValidParameters()const
 	return(IsValidRootKey(parameters.rootKey) &&
 		IsValidBeatsPerMinute(parameters.beatsPerMinute) &&
 		IsValidRamp(parameters.ramp) &&
-		IsValidAccent(parameters.accent) &&
 		IsValidVolume(parameters.volume));
 }
 void WaveParameters::MapMidiValues()
@@ -74,15 +72,6 @@ bool WaveParameters::IsValidRamp(float val)const
 	if (val >= 0.0f && val <= MAX_RAMP)
 		return true;
 	cerr << "ERROR: invalid ramp value of " << val << "! Enter ramp value between 0.0 and " << MAX_RAMP <<"!\n";
-	return false;
-
-}
-
-bool WaveParameters::IsValidAccent(float val)const
-{
-	if (val >= 0.0f && val <= MAX_ACCENT)
-		return true;
-	cerr << "ERROR: invalid accent value of " << val << "! Enter accent value between 0.0 and " << MAX_ACCENT << "!\n";
 	return false;
 
 }
@@ -152,13 +141,14 @@ bool WaveParameters::ParseArguments(int argc, char* argv[])
 			setScaleType(argvArray[i]);
 		}
 		else if (!argvArray[i].find("--random"))
-		{
-			setRandom();
+		{	
+			setRandom(ParseStringToInt(argvArray[i]));
 		}
 		else
 		{
 			cout << "ERORR: invalid argument " << argv[i] << endl;
 			cout << "Closing program... \n";
+			return false;
 		}
 	}
 
@@ -279,9 +269,9 @@ void WaveParameters::setScaleType(const std::string& type)
 		std::cout << "Invalid scale type. Enter either 'major' or 'minor'";
 }
 
-void WaveParameters::setRandom()
+void WaveParameters::setRandom(bool val)
 {
-	parameters.random = true;
+	parameters.random = val;
 }
 
 

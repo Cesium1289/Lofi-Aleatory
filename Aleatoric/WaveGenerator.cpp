@@ -24,7 +24,6 @@ void WaveGenerator::playWave(WaveParameters& args)
 	cout << "Root: " << args.parameters.rootKey << endl;
 	cout << "BPM: " << args.parameters.beatsPerMinute << endl;
 	cout << "Ramp: " << args.parameters.ramp << endl;
-	cout << "Accent: " << args.parameters.accent << endl;
 	cout << "Volume: " << args.parameters.volume << endl;
 	cout <<"Key: "<< args.parameters.key << endl;
 	cout <<"waveType: " << args.parameters.waveType << endl;
@@ -36,8 +35,10 @@ void WaveGenerator::playWave(WaveParameters& args)
 		//check if sound is playing
 		while (sound.getStatus() == sf::Sound::Playing)
 			sf::sleep(sf::milliseconds(100));
-
-		GenerateWave(args, freqArray[rand() % 7], lofiSample);
+		if (!args.parameters.random)
+			GenerateWave(args, freqArray[rand() % 7], lofiSample);
+		else
+			GenerateRandomWave(freqArray[rand() % 7], lofiSample);
 		sound.setBuffer(lofiSample);
 		sound.play();
 	}
@@ -80,7 +81,7 @@ void WaveGenerator::GenerateSineWave(WaveParameters& args, float freq, sf::Sound
 void WaveGenerator::GenerateSquareWave(WaveParameters& params, float freq, sf::SoundBuffer& sound)
 {
 	vector<sf::Int16> buffer;
-	float amplitude = GenerateAmplitude(params.parameters.accent);
+	float amplitude = GenerateAmplitude(params.parameters.volume);
 
 	for (size_t i = 0; i < NUM_SAMPLES; i++)
 	{

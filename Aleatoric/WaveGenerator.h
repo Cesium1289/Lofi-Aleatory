@@ -2,7 +2,7 @@
 #define WaveGenerator_H
 #include<SFML/Audio.hpp>
 #include "WaveParameters.h"
-using namespace std;
+using std::vector;
 
 class WaveGenerator
 {
