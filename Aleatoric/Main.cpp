@@ -8,6 +8,9 @@
 #include "Gui/Gui.hpp"
 using namespace std;
 
+#include"WaveParameters.h"
+#include"WaveGenerator.h"
+
 
 sf::Color hex2color(const std::string& hexcolor)
 {
@@ -35,6 +38,15 @@ struct Theme
 
 int main()
 {
+	sf::SoundBuffer sound;
+	WaveParameters params;
+	WaveGenerator wave;
+
+	if (params.ParseArguments(argc, argv))
+	{
+		wave.playWave(params);
+	}
+
 	Theme defaultTheme = {
 		hex2color("#dddbde"),
 		"Assets/texture-default.png"

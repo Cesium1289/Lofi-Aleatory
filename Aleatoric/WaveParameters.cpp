@@ -4,43 +4,34 @@
 #include<cmath>
 #include<cstdlib>
 #include <stdlib.h>
-using namespace std;
 
 const int NUM_SAMPLES = 48000;
 const int NUM_KEYS = 7;
-using std::cout;
-const int MIN_BEATS_PER_MEASURE = 1;
 const float MIN_BEATS_PER_MINUTE = 0.1f;
 const float MAX_RAMP = 0.5f;
 const float MAX_VOLUME = 10.0f;
-const float MAX_ACCENT = 10.0f;
+using std::cout;
+using std::cerr;
+using std::invalid_argument;
+using std::endl;
 
 WaveParameters::WaveParameters()
 {
-	parameters.waveTypeAmp = 3.0f;
-	parameters.squareWaveAmp = 3.0f;
-	parameters.sineWaveAmp = 3.0f;
-	parameters.triangleWaveAmp = 3.0f;
-	parameters.sawWaveAmp = 3.0f;
 	parameters.rootKey = 45;
-	parameters.beatsPerMeasure = 8;
-	parameters.beatsPerMinute = 120.0f;
+	parameters.beatsPerMinute = 20.0f;
 	parameters.ramp = 0.5f;
-	parameters.accent = 5.0f;
 	parameters.volume = 8.0f;
 	parameters.key = 'a';
-	parameters.waveType = sine;
-
+	parameters.waveType = saw;
+	parameters.random = false;
 	MapMidiValues();
 }
 
 bool WaveParameters::AreValidParameters()const
 {
 	return(IsValidRootKey(parameters.rootKey) &&
-		IsValidBeatsPerMeasure(parameters.beatsPerMeasure) &&
 		IsValidBeatsPerMinute(parameters.beatsPerMinute) &&
 		IsValidRamp(parameters.ramp) &&
-		IsValidAccent(parameters.accent) &&
 		IsValidVolume(parameters.volume));
 }
 void WaveParameters::MapMidiValues()
@@ -68,14 +59,6 @@ bool WaveParameters::IsValidRootKey(int val) const
 	return false;
 }
 
-bool WaveParameters::IsValidBeatsPerMeasure(int val)const
-{
-	if (val >= MIN_BEATS_PER_MEASURE)
-		return true;
-	std::cerr << "ERROR: invalid beats per measure value of " << val << "! Enter beats per measure value greater than "<< MIN_BEATS_PER_MEASURE <<"!\n";
-	return false;
-}
-
 bool WaveParameters::IsValidBeatsPerMinute(float val)const
 {
 	if (val >= MIN_BEATS_PER_MINUTE)
@@ -88,16 +71,7 @@ bool WaveParameters::IsValidRamp(float val)const
 {
 	if (val >= 0.0f && val <= MAX_RAMP)
 		return true;
-	std::cerr << "ERROR: invalid ramp value of " << val << "! Enter ramp value between 0.0 and " << MAX_RAMP <<"!\n";
-	return false;
-
-}
-
-bool WaveParameters::IsValidAccent(float val)const
-{
-	if (val >= 0.0f && val <= MAX_ACCENT)
-		return true;
-	std::cerr << "ERROR: invalid accent value of " << val << "! Enter accent value between 0.0 and " << MAX_ACCENT << "!\n";
+	cerr << "ERROR: invalid ramp value of " << val << "! Enter ramp value between 0.0 and " << MAX_RAMP <<"!\n";
 	return false;
 
 }
@@ -106,7 +80,7 @@ bool WaveParameters::IsValidVolume(float val)const
 {
 	if (val >= 0.0f && val <= MAX_VOLUME)
 		return true;
-	std::cerr << "ERROR: invalid volume value of " << val << "! Enter volume value between 0.0 and 10.0!\n";
+	cerr << "ERROR: invalid volume value of " << val << "! Enter volume value between 0.0 and 10.0!\n";
 	return false;
 }
 
@@ -119,14 +93,14 @@ bool WaveParameters::SetRootKeyCharacter(int val)
 		if (it.second == val)
 		{
 			parameters.key = it.first;
-			std::cout << parameters.key << std::endl;
+			cout << parameters.key << std::endl;
 			return true;
 		}
 	}
 	return false;
 }
 
-bool WaveParameters::ParseArguments(WaveParameters& param, int argc, const char* argv[])
+bool WaveParameters::ParseArguments(int argc, char* argv[])
 {
 	string* argvArray = new string[argc];
 	for (size_t i = 0; i < argc; i++)
@@ -138,50 +112,67 @@ bool WaveParameters::ParseArguments(WaveParameters& param, int argc, const char*
 	for (size_t i = 1; i < argc; i++) {
 		if (!argvArray[i].find("--root"))
 		{
-			param.setRootKey(ParseSubString(argvArray[i]));
+			setRootKey(ParseStringToInt(argvArray[i]));
 		}
-
 		else if (!argvArray[i].find("--bpm"))
 		{
-			param.setBPM(ParseSubString(argvArray[i]));
+			setBPM(ParseStringToFloat(argvArray[i]));
 
 		}
 		else if (!argvArray[i].find("--volume"))
 		{
-			param.setVolume(ParseSubString(argvArray[i]));
+			setVolume(ParseStringToFloat(argvArray[i]));
 
 		}
 		else if (!argvArray[i].find("--ramp"))
 		{
-			param.setRamp(ParseSubString(argvArray[i]));
+			setRamp(ParseStringToFloat(argvArray[i]));
 			cout << argvArray[i];
 
 		}
 		else if (!argvArray[i].find("--wave"))
 		{
 			ParseStringToString(argvArray[i]);
-			param.setWaveType(argvArray[i]);
+			setWaveType(argvArray[i]);
 		}
 		else if (!argvArray[i].find("--scale"))
 		{
 			ParseStringToString(argvArray[i]);
-			param.setScaleType(argvArray[i]);
+			setScaleType(argvArray[i]);
 		}
 		else if (!argvArray[i].find("--random"))
-		{
-			param.setRandom();
+		{	
+			setRandom(ParseStringToInt(argvArray[i]));
 		}
 		else
 		{
 			cout << "ERORR: invalid argument " << argv[i] << endl;
 			cout << "Closing program... \n";
+			return false;
 		}
 	}
 
-	return true;
+	return AreValidParameters();
 }
 
-float WaveParameters::ParseSubString(string& arg)
+int WaveParameters::ParseStringToInt(string& arg)
+{
+	size_t pos = arg.find("[");
+	arg.erase(0, pos + 1);
+	pos = arg.find("]");
+	arg.erase(pos);
+
+	try {
+		return stoi(arg);
+	}
+	catch (invalid_argument const& error)
+	{
+		cout << "Invalid parameter value: " << error.what() << "\n";
+		return -1.0;
+	}
+}
+
+float WaveParameters::ParseStringToFloat(string& arg)
 {
 	size_t pos = arg.find("[");
 	arg.erase(0, pos + 1);
@@ -193,10 +184,11 @@ float WaveParameters::ParseSubString(string& arg)
 	}
 	catch (invalid_argument const& error)
 	{
-		cout << "Invalid parameter value: " << error.what() << endl;
-		return -1.0;
+		cout << "Invalid parameter value: " << error.what() << "\n";
+		return -1.0f;
 	}
 }
+
 
 void WaveParameters::ParseStringToString(string& arg)
 {
@@ -231,7 +223,7 @@ void WaveParameters::GenerateRandomWave(float frequency, sf::SoundBuffer& Wave)
 }
 
 
-void WaveParameters::setRootKey(float rootKey)
+void WaveParameters::setRootKey(int rootKey)
 {
 	parameters.rootKey = rootKey;
 }
@@ -277,24 +269,20 @@ void WaveParameters::setScaleType(const std::string& type)
 		std::cout << "Invalid scale type. Enter either 'major' or 'minor'";
 }
 
-void WaveParameters::setRandom()
+void WaveParameters::setRandom(bool val)
 {
-	parameters.random = true;
+	parameters.random = val;
 }
 
-float WaveParameters::GetAmp(waveEnum)
-{
-	return 0.0f;
-}
 
 float WaveParameters::GetRamp()
 {
-	return 0.0f;
+	return parameters.ramp;
 }
 
 float WaveParameters::GetBPM()
 {
-	return 0.0f;
+	return parameters.beatsPerMinute;
 }
 
 float WaveParameters::WaveFunc(float pos, int type)
@@ -311,6 +299,7 @@ float WaveParameters::WaveFunc(float pos, int type)
 	//triangle wave
 	else if (type == 4)
 		return 1 - fabs(pos - 0.5) * 4;
+	return 0;
 }
 
 //Calculate the beat time for the attack and release time for the note envelope

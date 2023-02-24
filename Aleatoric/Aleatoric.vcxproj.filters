@@ -73,6 +73,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Gui\Layouts\VBoxLayout.cpp">
+    <ClCompile Include="WaveGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -165,5 +166,9 @@
     <None Include="Gui\OptionsBox.inl">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+    <ClInclude Include="WaveGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

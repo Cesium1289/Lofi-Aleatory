@@ -160,6 +160,7 @@
     <ClCompile Include="Gui\Utils\Box.cpp" />
     <ClCompile Include="Gui\Utils\Cross.cpp" />
     <ClCompile Include="Gui\Widget.cpp" />
+    <ClCompile Include="WaveGenerator.cpp" />
     <ClCompile Include="WaveParameters.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -188,6 +189,7 @@
     <ClInclude Include="Gui\Utils\ItemBox.hpp" />
     <ClInclude Include="Gui\Widget.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="WaveGenerator.h" />
     <ClInclude Include="WaveParameters.h" />
   </ItemGroup>
   <ItemGroup>
