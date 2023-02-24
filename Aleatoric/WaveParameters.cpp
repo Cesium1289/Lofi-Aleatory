@@ -142,7 +142,11 @@ bool WaveParameters::ParseArguments(int argc, char* argv[])
 		}
 		else if (!argvArray[i].find("--random"))
 		{	
-			setRandom(ParseStringToInt(argvArray[i]));
+			ParseStringToString(argvArray[i]);
+			if (argvArray[i] == "true")
+				setRandom(true);
+			else
+				setRandom(false);
 		}
 		else
 		{
