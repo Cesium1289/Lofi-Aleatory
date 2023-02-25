@@ -37,6 +37,7 @@ class WaveParameters
 		float GetBPM();
 		void RampSamples(vector<sf::Int16>& sample, float frac);
 		float WaveFunc(float pos, int type);
+		void display();
 	private:
 		struct Parameters
 		{
