@@ -1,14 +1,17 @@
+#ifndef WaveParamters_H
+#define WaveParamters_H
 #include<map>
 #include <string>
 #include<vector>
 #include<SFML/Audio.hpp>
-using namespace std;
+using std::string;
+using std::vector;
 
 enum waveEnum {
-	sine = 1,
-	triangle = 2,
-	square = 3,
-	saw = 4
+	sine,
+	triangle,
+	square,
+	saw
 };
 
 class WaveParameters
@@ -18,18 +21,18 @@ class WaveParameters
 		WaveParameters();
 		bool AreValidParameters()const;
 		bool SetRootKeyCharacter(int val);
-		bool ParseArguments(WaveParameters& param, int argc, const char* argv[]);
-		float ParseSubString(string& arg);
+		bool ParseArguments(int argc, char* argv[]);
+		float ParseStringToFloat(string& arg);
+		int ParseStringToInt(string& arg);
 		void ParseStringToString(string& arg);
 		void GenerateRandomWave(float frequency, sf::SoundBuffer& Wave);
-		void setRootKey(float);
+		void setRootKey(int);
 		void setBPM(float);
 		void setVolume(float);
 		void setRamp(float);
 		void setWaveType(const std::string&);
 		void setScaleType(const std::string&);
-		void setRandom();
-		float GetAmp(waveEnum);
+		void setRandom(bool);
 		float GetRamp();
 		float GetBPM();
 		void RampSamples(vector<sf::Int16>& sample, float frac);
@@ -37,32 +40,23 @@ class WaveParameters
 	private:
 		struct Parameters
 		{
-			float waveTypeAmp = 5.0f;
-			float sineWaveAmp = 5.0f;
-			float squareWaveAmp = 5.0f;
-			float triangleWaveAmp = 5.0f;
-			float sawWaveAmp = 5.0f;
-			int sig = 8;
-			int rootKey = 45;
-			int beatsPerMeasure = 8;
-			float beatsPerMinute = 120.0f;
-			float ramp = 0.5f;
-			float accent = 5.0f;
-			float volume = 8.0f;
-			char key = 'a';
-			int scale = 1;
-			waveEnum waveType = sine;
-			bool random = true;
+			int rootKey;
+			float beatsPerMinute;
+			float ramp;
+			float volume;
+			char key;
+			int scale;
+			waveEnum waveType;
+			bool random;
 		};
 	
 		Parameters parameters;
 		std::multimap<const char, int> MidiKeyMap;
 		void MapMidiValues();
-		bool IsValidBeatsPerMeasure(int val)const;
 		bool IsValidBeatsPerMinute(float val)const;
 		bool IsValidRamp(float val)const;
 		bool IsValidAccent(float val)const;
 		bool IsValidVolume(float val)const;
 		bool IsValidRootKey(int val)const;
 };
-
+#endif
