@@ -348,3 +348,8 @@ void WaveParameters::RampSamples(vector<sf::Int16>& sample, float frac)
 		--n;
 	}
 }
+
+int WaveParameters::TestAddMethod(int a, int b)
+{
+	return a + b;
+}
