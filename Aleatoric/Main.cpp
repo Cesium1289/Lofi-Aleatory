@@ -10,41 +10,12 @@
 #include "Gui/Gui.hpp"
 using namespace std;
 
-
-sf::Color hex2color(const std::string& hexcolor)
-{
-	sf::Color color = sf::Color::Black;
-	if (hexcolor.size() == 7) // #ffffff
-	{
-		color.r = strtoul(hexcolor.substr(1, 2).c_str(), NULL, 16);
-		color.g = strtoul(hexcolor.substr(3, 2).c_str(), NULL, 16);
-		color.b = strtoul(hexcolor.substr(5, 2).c_str(), NULL, 16);
-	}
-	else if (hexcolor.size() == 4) // #fff
-	{
-		color.r = strtoul(hexcolor.substr(1, 1).c_str(), NULL, 16) * 17;
-		color.g = strtoul(hexcolor.substr(2, 1).c_str(), NULL, 16) * 17;
-		color.b = strtoul(hexcolor.substr(3, 1).c_str(), NULL, 16) * 17;
-	}
-	return color;
-}
-
-struct Theme
-{
-	sf::Color backgroundColor;
-	std::string texturePath;
-};
-
 int main(int argc, char** argv)
 {
 	sf::SoundBuffer sound;
 	WaveParameters params;
 	WaveGenerator wave;
 	bool randomize = false;
-	Theme defaultTheme = {
-		hex2color("#eeeeee"),
-		"Assets/texture-default.png"
-	};
 
 	// Create the main window
 	sf::RenderWindow app(sf::VideoMode(1500, 1030), "Lofi-Aleatory", sf::Style::Close);
@@ -54,18 +25,10 @@ int main(int argc, char** argv)
 	menu.setPosition(0, 0);
 
 	gui::Theme::loadFont("Assets/Georama-Semibold.ttf");
-	gui::Theme::loadTexture(defaultTheme.texturePath);
 	gui::Theme::textSize = 100;
 	gui::Theme::PADDING = 40.0f;
 	gui::Theme::MARGIN = 10.0f;
-	gui::Theme::windowBgColor = defaultTheme.backgroundColor;
-
-	//Header font
-	sf::Font displayFont;
-	// Load it from a file
-	if (!displayFont.loadFromFile("Assets/Imprima-Regular.ttf")) {
-		cout << "Couldn't load font" << endl;
-	};
+	gui::Theme::windowBgColor = sf::Color(235, 235, 235, 255);
 
 	//Title and description text
 	gui::HBoxLayout* titleAndDescription = menu.addHBoxLayout();
@@ -83,9 +46,6 @@ int main(int argc, char** argv)
 	gui::VBoxLayout* col1 = main->addVBoxLayout();
 	gui::VBoxLayout* col2 = main->addVBoxLayout();
 	gui::VBoxLayout* col3 = main->addVBoxLayout();
-
-
-
 
 
 	//Root note selector
