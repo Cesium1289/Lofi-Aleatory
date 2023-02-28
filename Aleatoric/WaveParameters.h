@@ -2,6 +2,9 @@
 #include <string>
 #include<vector>
 #include<SFML/Audio.hpp>
+
+#pragma once
+
 using namespace std;
 
 enum waveEnum {

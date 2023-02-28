@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "../Aleatoric/WaveParameters.h"
-//#include "../Aleatoric/WaveParameters.cpp"
+#include "../Aleatoric/WaveParameters.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
