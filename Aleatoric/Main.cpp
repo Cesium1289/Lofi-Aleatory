@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 	gui::Theme::textSize = 100;
 	gui::Theme::PADDING = 40.0f;
 	gui::Theme::MARGIN = 10.0f;
-	gui::Theme::windowBgColor = sf::Color(235, 235, 235, 255);
+	gui::Theme::windowBgColor = sf::Color(210, 230, 240, 255);
 
 	//Title and description text
 	gui::HBoxLayout* titleAndDescription = menu.addHBoxLayout();
