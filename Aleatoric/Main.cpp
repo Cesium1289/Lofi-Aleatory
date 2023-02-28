@@ -35,7 +35,7 @@ struct Theme
 	std::string texturePath;
 };
 
-int main(int argc, char ** argv)
+int main(int argc, char** argv)
 {
 	sf::SoundBuffer sound;
 	WaveParameters params;
@@ -47,24 +47,17 @@ int main(int argc, char ** argv)
 	};
 
 	// Create the main window
-	sf::RenderWindow app(sf::VideoMode(1500, 1000), "SFML Widgets", sf::Style::Close);
-	app.setFramerateLimit(60);
+	sf::RenderWindow app(sf::VideoMode(1500, 1030), "Lofi-Aleatory", sf::Style::Close);
+	app.setFramerateLimit(30);
 
 	gui::Menu menu(app);
-	menu.setPosition(0, 200);
+	menu.setPosition(0, 0);
 
 	gui::Theme::loadFont("Assets/Georama-Semibold.ttf");
 	gui::Theme::loadTexture(defaultTheme.texturePath);
-	gui::Theme::textSize = 60;
-	gui::Theme::click.textColor = hex2color("#191B18");
-	gui::Theme::click.textColorHover = hex2color("#191B18");
-	gui::Theme::click.textColorFocus = hex2color("#000");
-	gui::Theme::input.textColor = hex2color("#000");
-	gui::Theme::input.textColorHover = hex2color("#fff");
-	gui::Theme::input.textColorFocus = hex2color("#000");
-	gui::Theme::input.textSelectionColor = hex2color("#8791AD");
-	gui::Theme::input.textPlaceholderColor = hex2color("#8791AD");
-	gui::Theme::PADDING = 0.f;
+	gui::Theme::textSize = 100;
+	gui::Theme::PADDING = 40.0f;
+	gui::Theme::MARGIN = 10.0f;
 	gui::Theme::windowBgColor = defaultTheme.backgroundColor;
 
 	//Header font
@@ -74,105 +67,116 @@ int main(int argc, char ** argv)
 		cout << "Couldn't load font" << endl;
 	};
 
-	gui::HBoxLayout* main = menu.addHBoxLayout();
+	//Title and description text
+	gui::HBoxLayout* titleAndDescription = menu.addHBoxLayout();
+	sf::Texture titleCardTexture;
+	titleCardTexture.loadFromFile("Assets/title.png");
+	gui::Image* titleCard = new gui::Image(titleCardTexture);
+	sf::Texture descriptionCardTexture;
+	descriptionCardTexture.loadFromFile("Assets/description.png");
+	gui::Image* descriptionCard = new gui::Image(descriptionCardTexture);
+	titleAndDescription->add(titleCard);
+	titleAndDescription->add(descriptionCard);
 
+	//Main interface
+	gui::HBoxLayout* main = menu.addHBoxLayout();
 	gui::VBoxLayout* col1 = main->addVBoxLayout();
 	gui::VBoxLayout* col2 = main->addVBoxLayout();
 	gui::VBoxLayout* col3 = main->addVBoxLayout();
 
 
-	sf::Text titleText("Lofi-Aleatory", gui::Theme::getFont());
-	titleText.setCharacterSize(60);
-	titleText.setFont(displayFont);
-	titleText.setFillColor(sf::Color(255, 255, 255));
-	titleText.setPosition(50, 50);
 
-	string description = "A simple program that generates parameterized sound waves.";
-	sf::Text descriptionText(description, gui::Theme::getFont());
-	descriptionText.setCharacterSize(30);
-	descriptionText.setFont(displayFont);
-	descriptionText.setFillColor(sf::Color(15, 140, 255));
-	descriptionText.setPosition(560, 80);
-
-	//Card for the title
-	sf::RectangleShape titleCard(sf::Vector2f(500, 200));
-	titleCard.setFillColor(sf::Color(15, 140, 255));
-	titleCard.setPosition(sf::Vector2f(0, 0));
-
-	//Card for the description
-	sf::RectangleShape descriptionCard(sf::Vector2f(1000, 200));
-	descriptionCard.setFillColor(sf::Color(218, 237, 255));
-	descriptionCard.setPosition(sf::Vector2f(500, 0));
 
 
 	//Root note selector
 	gui::HBoxLayout* rootSelector = col2->addHBoxLayout();
-	gui::TextBox* rootTextBox = new gui::TextBox();
+	gui::TextBox* rootTextBox = new gui::TextBox(390);
 	rootTextBox->setText("45");
 	rootTextBox->setMaxLength(3);
-	rootSelector->addLabel("ROOT");
+	rootTextBox->setCallback([&]() {
+		try {
+		params.setRootKey(stoi(static_cast<string>(rootTextBox->getText())));
+	}
+	catch (const std::exception& e) {
+		cout << e.what() << endl;
+	};
+	params.display();
+		});
+
+	sf::Texture rootTextBoxTexture;
+	rootTextBoxTexture.loadFromFile("Assets/labels-10.png");
+	gui::Image* rootLabel = new gui::Image(rootTextBoxTexture);
+
+	rootSelector->add(rootLabel);
 	rootSelector->add(rootTextBox);
 
-	gui::TextBox* textbox = new gui::TextBox();
-		rootTextBox->setCallback([&]() {
-			params.setRootKey(stoi(static_cast<string>(rootTextBox->getText())));
-		params.display();
-			});
+
 
 
 	// Slider for ramp
 	gui::HBoxLayout* rampSelector = col3->addHBoxLayout();
-	gui::Slider* rampSlider = new gui::Slider(250.0f, gui::Horizontal);
+	gui::Slider* rampSlider = new gui::Slider(360.0f, gui::Horizontal);
 	rampSlider->setStep(1);
 	rampSlider->setCallback([&]() {
-	params.setRamp(rampSlider->getValue() * 0.005f);
+		params.setRamp(rampSlider->getValue() * 0.005f);
+	cout << rampSelector->getAbsolutePosition().x << endl;
 	params.display();
 		});
-	rampSelector->addLabel("RAMP");
+
+	sf::Texture rampLabelTexture;
+	rampLabelTexture.loadFromFile("Assets/labels-07.png");
+	gui::Image* rampLabel = new gui::Image(rampLabelTexture);
+
+	rampSelector->add(rampLabel);
 	rampSelector->add(rampSlider);
+
 
 	// Slider for BMP
 	gui::HBoxLayout* bpmSelector = col3->addHBoxLayout();
-	gui::Slider* bpmSlider = new gui::Slider(250.0f, gui::Horizontal);
+	gui::Slider* bpmSlider = new gui::Slider(360.0f, gui::Horizontal);
 	bpmSlider->setStep(1);
 	bpmSlider->setCallback([&]() {
 		params.setBPM(bpmSlider->getValue() * 2.4);
 	params.display();
 		});
-	bpmSelector->addLabel("BPM");
+
+	sf::Texture bpmLabelTexture;
+	bpmLabelTexture.loadFromFile("Assets/labels-08.png");
+	gui::Image* bpmLabel = new gui::Image(bpmLabelTexture);
+
+	bpmSelector->add(bpmLabel);
 	bpmSelector->add(bpmSlider);
 
 
-	// Slider for BMP
+	// Slider for Volume
 	gui::HBoxLayout* volSelector = col3->addHBoxLayout();
-	gui::Slider* volSlider = new gui::Slider(250.0f, gui::Horizontal);
+	gui::Slider* volSlider = new gui::Slider(360.0f, gui::Horizontal);
 	volSlider->setStep(1);
 	volSlider->setCallback([&]() {
-		params.setBPM(volSlider->getValue() * 2.4);
+		params.setVolume(volSlider->getValue() * 0.1);
 	params.display();
 		});
-	volSelector->addLabel("VOL");
+
+	sf::Texture volLabelTexture;
+	volLabelTexture.loadFromFile("Assets/labels-09.png");
+	gui::Image* volLabel = new gui::Image(volLabelTexture);
+
+	volSelector->add(volLabel);
 	volSelector->add(volSlider);
-
-	//Randomize checkbox
-	gui::CheckBox* randomCheckBox = new gui::CheckBox();
-	randomCheckBox->setCallback([&]() {
-	if (randomCheckBox->isChecked())
-		params.setRandom(true);
-	else
-		params.setRandom(false);
-		});
-	col2->add(randomCheckBox);
-
 
 	//Play button
 	sf::Texture playButtonBackground;
 	playButtonBackground.loadFromFile("Assets/playButtonSprites.png");
 	gui::SpriteButton* playButton = new gui::SpriteButton(playButtonBackground);
 	col2->add(playButton);
-	playButton->setCallback([&] {
-		std::cout << "click!" << std::endl;
-	params.setRootKey(stoi(static_cast<string>(rootTextBox->getText())));
+	playButton->setCallback([&]
+		{
+			try {
+			params.setRootKey(stoi(static_cast<string>(rootTextBox->getText())));
+		}
+			catch (const std::exception& e) {
+			cout << e.what() << endl;
+	}
 	//wave.playWave(params);
 		});
 
@@ -191,7 +195,7 @@ int main(int argc, char ** argv)
 		});
 
 
-	// Wave buttons
+	// Sine wave button
 	sf::Texture sineWaveBackground;
 	sineWaveBackground.loadFromFile("Assets/sineWaveSprite.png");
 	gui::SpriteButton* sineWaveButton = new gui::SpriteButton(sineWaveBackground);
@@ -203,7 +207,7 @@ int main(int argc, char ** argv)
 	params.display();
 		});
 
-
+	//Square wave button
 	sf::Texture squareWaveBackground;
 	squareWaveBackground.loadFromFile("Assets/squareWaveSprite.png");
 	gui::SpriteButton* squareWaveButton = new gui::SpriteButton(squareWaveBackground);
@@ -215,6 +219,7 @@ int main(int argc, char ** argv)
 	params.display();
 		});
 
+	//Saw wave button
 	sf::Texture sawWaveBackground;
 	sawWaveBackground.loadFromFile("Assets/sawWaveSprite.png");
 	gui::SpriteButton* sawWaveButton = new gui::SpriteButton(sawWaveBackground);
@@ -226,6 +231,7 @@ int main(int argc, char ** argv)
 	params.display();
 		});
 
+	//Triangle wave button
 	sf::Texture triangleWaveBackground;
 	triangleWaveBackground.loadFromFile("Assets/triangleWaveSprite.png");
 	gui::SpriteButton* triangleWaveButton = new gui::SpriteButton(triangleWaveBackground);
@@ -236,6 +242,7 @@ int main(int argc, char ** argv)
 	params.setWaveType("triangle");
 	params.display();
 		});
+
 
 	// Start the application loop
 	while (app.isOpen())
@@ -252,10 +259,6 @@ int main(int argc, char ** argv)
 
 		// Clear screen
 		app.clear(gui::Theme::windowBgColor);
-		app.draw(titleCard);
-		app.draw(descriptionCard);
-		app.draw(titleText);
-		app.draw(descriptionText);
 		app.draw(menu);
 		// Update the window
 		app.display();
