@@ -173,7 +173,7 @@ int main(int argc, char ** argv)
 	playButton->setCallback([&] {
 		std::cout << "click!" << std::endl;
 	params.setRootKey(stoi(static_cast<string>(rootTextBox->getText())));
-	wave.playWave(params);
+	//wave.playWave(params);
 		});
 
 
