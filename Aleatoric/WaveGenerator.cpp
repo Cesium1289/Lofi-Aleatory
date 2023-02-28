@@ -5,69 +5,129 @@
 #include<cmath>
 #include<cstdlib>
 using namespace std;
-
 const int NUM_SAMPLES = 48000;
 const int NUM_KEYS = 7;
-
 
 //Play the wave that was generated
 void WaveGenerator::playWave(WaveParameters& args)
 {
-	
-
+	srand(time(NULL));
+	sf::SoundBuffer lofiSample;
+	sf::Sound sound;
 	vector<int> scaleArray;
 	float freqArray[NUM_KEYS];
-	sf::SoundBuffer sineSamples[NUM_KEYS];
-	sf::SoundBuffer squareSample;
-	sf::SoundBuffer triangleSample;
-	sf::SoundBuffer sawSample;
-	sf::Sound sound;
+
+	fillMajorArray(scaleArray, args.parameters.key);
+	CalculateFrequency(freqArray, scaleArray, args.parameters.rootKey);
+
+	cout << "\n-_-_-Values used-_-_-\n";
+	cout << "Root: " << args.parameters.rootKey << endl;
+	cout << "BPM: " << args.parameters.beatsPerMinute << endl;
+	cout << "Ramp: " << args.parameters.ramp << endl;
+	cout << "Volume: " << args.parameters.volume << endl;
+	cout <<"Key: "<< args.parameters.key << endl;
+	cout <<"waveType: " << args.parameters.waveType << endl;
+	cout << "Random: " << args.parameters.random << endl;
 
 
-	WaveParameters::Parameters param = args.parameters;
-	SetAmplitudes(args);
-	fillMajorArray(scaleArray, param.key);
-	CalculateFrequency(freqArray, scaleArray, param.rootKey);
-
-	GenerateWave(freqArray[0], triangleSample, args, 2);
-	GenerateWave(freqArray[0], squareSample, args, 3);
-	GenerateWave(freqArray[0], sawSample, args, 4);
-	for (int i = 0; i < NUM_KEYS; i++) {
-		GenerateWave(freqArray[i], sineSamples[i], args, 1);
-	}
-
-	int i = 1;
 	while (1)
 	{
 		//check if sound is playing
 		while (sound.getStatus() == sf::Sound::Playing)
 			sf::sleep(sf::milliseconds(100));
-
-		//check to play sine wave
-		if (i % 4 == 1)
-		{
-			sound.setBuffer(sineSamples[rand() % NUM_KEYS]);
-			sound.play();
-		}
-		//check to play square wave
-		else if (i % 4 == 2) {
-			sound.setBuffer(triangleSample);
-			sound.play();
-		}
-		//check to play triangle wave
-		else if (i % 4 == 3)
-		{
-			sound.setBuffer(squareSample);
-			sound.play();
-		}
-		//check to play saw wave
+		if (!args.parameters.random)
+			GenerateWave(args, freqArray[rand() % 7], lofiSample);
 		else
-		{
-			sound.setBuffer(sawSample);
-			sound.play();
-		}
-		++i;
+			GenerateRandomWave(freqArray[rand() % 7], lofiSample);
+		sound.setBuffer(lofiSample);
+		sound.play();
 	}
+}
+
+void WaveGenerator::GenerateSawWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer)
+{
+	vector<sf::Int16> saw;
+	vector<sf::Int16> samples;
+	float amplitude = GenerateAmplitude(params.parameters.volume);
+
+	for (int i = 0; i < NUM_SAMPLES; ++i)
+	{
+		samples.push_back(10000 * amplitude * sin((2 * 3.1415 * freq) * (static_cast<float>(i) / NUM_SAMPLES)));
+		if (samples.back() >= 0)
+			saw.push_back(samples.back());
+		else
+			saw.push_back(0);
+	}
+
+	RampSamples(samples, params.parameters.ramp);
+	buffer.loadFromSamples(&saw[0], saw.size(), 1, NUM_SAMPLES * (params.parameters.beatsPerMinute / 60));
+}
+
+void WaveGenerator::GenerateSineWave(WaveParameters& args, float freq, sf::SoundBuffer& sound)
+{
+	vector<sf::Int16> buffer;
+	const double amplitude = GenerateAmplitude(args.parameters.volume);
+
+	// Sine Wave Oscillator
+	for (int i = 0; i < NUM_SAMPLES; ++i)
+	{
+		buffer.push_back(10000 * amplitude * sin(2 * 3.141 * freq * (static_cast<float>(i) / NUM_SAMPLES)));
+	}
+	RampSamples(buffer, args.parameters.ramp);
+
+	sound.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (args.parameters.beatsPerMinute / 60));
+}
+
+void WaveGenerator::GenerateSquareWave(WaveParameters& params, float freq, sf::SoundBuffer& sound)
+{
+	vector<sf::Int16> buffer;
+	float amplitude = GenerateAmplitude(params.parameters.volume);
+
+	for (size_t i = 0; i < NUM_SAMPLES; i++)
+	{
+		if (sin(2 * 3.14 * freq * (static_cast<float>(i) / NUM_SAMPLES)) > 0)
+			buffer.push_back(10000 * amplitude);
+		else
+			buffer.push_back(-10000 * amplitude);
+	}
+
+	//ramp square wave sample
+	RampSamples(buffer, params.parameters.ramp);
+
+	//place sample into square wave buffer
+	sound.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (params.parameters.beatsPerMinute / 60));
+}
+
+void WaveGenerator::GenerateTriangleWave(WaveParameters& params, float freq, sf::SoundBuffer& sound)
+{
+	vector<sf::Int16> buffer;
+	for (size_t i = 0; i < NUM_SAMPLES; i++) {
+		buffer.push_back(10000 * (1 - fabs(fmod((static_cast<float>(i) * freq) / NUM_SAMPLES, 1.0) - 0.5) * 4) * GenerateAmplitude(params.parameters.volume));
+	}
+	//ramp square wave sample
+	RampSamples(buffer, params.parameters.ramp);
+
+	//place sample into square wave buffer
+	sound.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (params.parameters.beatsPerMinute / 60));
+	
+}
+
+float WaveGenerator::GenerateAmplitude(float volume)
+{
+	return pow(10, (-6 * (10 - volume)) / 20);
+}
+
+void WaveGenerator::GenerateWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer)
+{
+	if (params.parameters.waveType == sine)
+		GenerateSineWave(params, freq, buffer);
+	else if (params.parameters.waveType == triangle)
+		GenerateTriangleWave(params, freq, buffer);
+	else if (params.parameters.waveType == saw)
+		GenerateSawWave(params, freq, buffer);
+	else if (params.parameters.waveType == square)
+		GenerateSquareWave(params, freq, buffer);
+	else cout << "ERROR: Invalid wave type!\n";
 }
 
 //Calculate the frequency of the random keys that can be played
@@ -103,34 +163,6 @@ float WaveGenerator::WaveFunc(float pos, int waveType)
 
 	else
 		return -1.0;
-}
-
-
-//Given a type of wave and a frequency, generate a wave and store in a buffer
-void WaveGenerator::GenerateWave(float frequency, sf::SoundBuffer& Wave, WaveParameters& args, int waveType) {
-
-	vector<sf::Int16> buffer;
-	WaveParameters::Parameters param = args.parameters;
-
-	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		float pos = fmod((static_cast<float>(i) * frequency) / NUM_SAMPLES, 1.0);
-		buffer.push_back(10000 * WaveFunc(pos, waveType) * param.waveTypeAmp);
-	}
-
-	//ramp square wave sample
-	RampSamples(buffer, param.ramp);
-
-	//place sample into square wave buffer
-	Wave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (param.beatsPerMinute / 60));
-
-}
-
-//Set the amplitudes for the square and sine waves based on volume levels
-void WaveGenerator::SetAmplitudes(WaveParameters& args)
-{
-	WaveParameters::Parameters param = args.parameters;
-	param.squareWaveAmp = pow(10, (-6 * (10 - param.accent) / 20));
-	param.sineWaveAmp = pow(10, (-6 * (10 - param.volume) / 20));
 }
 
 //Calculate the beat time for the attack and release time for the note envelope
@@ -235,7 +267,7 @@ int WaveGenerator::CheckKeyValue(int rootKey, char& character)
 }
 
 // Randomize a frequency, generate a random wave and store in a buffer
-void WaveGenerator::GenerateRandomWave(float frequency, int &Wave)
+void WaveGenerator::GenerateRandomWave(float frequency, sf::SoundBuffer &Wave)
 {
     vector<sf::Int16> buffer;
 
@@ -244,7 +276,7 @@ void WaveGenerator::GenerateRandomWave(float frequency, int &Wave)
     srand(static_cast <unsigned> (time(0)));
     float randBPM = 1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/240-1));
     // Random wave type between 1 and 4
-    int randWaveType rand() % 4 + 1;
+    int randWaveType = rand() % 4 + 1;
 
     for (size_t i = 0; i < NUM_SAMPLES; i++) {
         float pos = fmod((static_cast<float>(i) * frequency) / NUM_SAMPLES, 1.0);
