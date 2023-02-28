@@ -12,8 +12,8 @@ const int NUM_KEYS = 7;
 void WaveGenerator::playWave(WaveParameters& args)
 {
 	srand(time(NULL));
-	sf::SoundBuffer lofiSample;
-	sf::Sound sound;
+	/*sf::SoundBuffer lofiSample;
+	sf::Sound sound;*/
 	vector<int> scaleArray;
 	float freqArray[NUM_KEYS];
 
@@ -43,6 +43,13 @@ void WaveGenerator::playWave(WaveParameters& args)
 		sound.play();
 	}
 }
+
+
+void WaveGenerator::stopWave() {
+	if (sound.getStatus() == sf::Sound::Playing)
+		sound.stop();
+}
+
 
 void WaveGenerator::GenerateSawWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer)
 {

@@ -177,7 +177,7 @@ int main(int argc, char ** argv)
 		});
 
 
-	//Randomize button
+
 	sf::Texture randomButtonBackground;
 	randomButtonBackground.loadFromFile("Assets/randomButtonSprites.png");
 	gui::SpriteButton* randomButton = new gui::SpriteButton(randomButtonBackground);
@@ -231,6 +231,7 @@ int main(int argc, char ** argv)
 	gui::SpriteButton* triangleWaveButton = new gui::SpriteButton(triangleWaveBackground);
 	triangleWaveButton->setTextSize(10);
 	col1->add(triangleWaveButton);
+
 	triangleWaveButton->setCallback([&] {
 		std::cout << "click!" << std::endl;
 	params.setWaveType("triangle");

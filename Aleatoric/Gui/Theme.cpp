@@ -17,7 +17,7 @@ sf::Color Theme::windowBgColor;
 int Theme::borderSize = 1.f;
 int Theme::minWidgetWidth = 86;
 float Theme::PADDING = 1.f;
-float Theme::MARGIN = 7.f;
+float Theme::MARGIN = 0.f;
 
 sf::Keyboard::Key Theme::nextWidgetKey = sf::Keyboard::Down;
 sf::Keyboard::Key Theme::previousWidgetKey = sf::Keyboard::Up;

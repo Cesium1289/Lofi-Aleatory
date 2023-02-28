@@ -8,7 +8,10 @@ class WaveGenerator
 {
 public:
 	void playWave(WaveParameters&);
+	void stopWave();
 private:
+	sf::SoundBuffer lofiSample;
+	sf::Sound sound;
 	void GenerateSawWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
 	void GenerateSineWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
 	void GenerateSquareWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
