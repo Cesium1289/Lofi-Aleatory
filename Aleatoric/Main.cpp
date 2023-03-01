@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 	params.display();
 		});
 
-
+	sf::Sound sounds;
 	// Start the application loop
 	while (app.isOpen())
 	{
@@ -221,6 +221,12 @@ int main(int argc, char** argv)
 		app.clear(gui::Theme::windowBgColor);
 		app.draw(menu);
 		// Update the window
+		while (sounds.getStatus() != sf::Sound::Playing)
+		{
+			wave.playWave(params, sound);
+			sounds.setBuffer(sound);
+			sounds.play();
+		}
 		app.display();
 	}
 

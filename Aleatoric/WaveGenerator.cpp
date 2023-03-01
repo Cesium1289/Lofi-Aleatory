@@ -9,13 +9,11 @@ const int NUM_SAMPLES = 48000;
 const int NUM_KEYS = 7;
 
 //Play the wave that was generated
-void WaveGenerator::playWave(WaveParameters& args)
+void WaveGenerator::playWave(WaveParameters& args, sf::SoundBuffer& lofiSample)
 {
 	srand(time(NULL));
-	/*sf::SoundBuffer lofiSample;
-	sf::Sound sound;*/
 	vector<int> scaleArray;
-	float freqArray[NUM_KEYS];
+	vector<float> freqArray;
 
 	fillMajorArray(scaleArray, args.parameters.key);
 	CalculateFrequency(freqArray, scaleArray, args.parameters.rootKey);
@@ -29,19 +27,7 @@ void WaveGenerator::playWave(WaveParameters& args)
 	cout <<"waveType: " << args.parameters.waveType << endl;
 	cout << "Random: " << args.parameters.random << endl;
 
-
-	while (1)
-	{
-		//check if sound is playing
-		while (sound.getStatus() == sf::Sound::Playing)
-			sf::sleep(sf::milliseconds(100));
-		if (!args.parameters.random)
-			GenerateWave(args, freqArray[rand() % 7], lofiSample);
-		else
-			GenerateRandomWave(freqArray[rand() % 7], lofiSample);
-		sound.setBuffer(lofiSample);
-		sound.play();
-	}
+	GenerateWave(args, freqArray.at(rand() % 7), lofiSample);
 }
 
 
@@ -138,13 +124,13 @@ void WaveGenerator::GenerateWave(WaveParameters& params, float freq, sf::SoundBu
 }
 
 //Calculate the frequency of the random keys that can be played
-void WaveGenerator::CalculateFrequency(float freqArray[], vector<int>& scaleArray, int rootKey)
+void WaveGenerator::CalculateFrequency(vector<float>&freqArray, vector<int>& scaleArray, int rootKey)
 {
 	int scaleOffset = 0;
 
 	for (size_t i = 0; i < NUM_KEYS + 1; i++)
 	{
-		freqArray[i] = 440 * static_cast<float>(pow(2.0, ((rootKey + static_cast<float>(scaleArray.at(i) + scaleOffset) - 69) / 12)));
+		freqArray.push_back(440 * static_cast<float>(pow(2.0, ((rootKey + static_cast<float>(scaleArray.at(i) + scaleOffset) - 69) / 12))));
 		scaleOffset += scaleArray[i];
 	}
 }
