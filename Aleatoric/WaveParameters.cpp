@@ -142,7 +142,11 @@ bool WaveParameters::ParseArguments(int argc, char* argv[])
 		}
 		else if (!argvArray[i].find("--random"))
 		{	
-			setRandom(ParseStringToInt(argvArray[i]));
+			ParseStringToString(argvArray[i]);
+			if (argvArray[i] == "true")
+				setRandom(true);
+			else
+				setRandom(false);
 		}
 		else
 		{
@@ -355,4 +359,9 @@ void WaveParameters::RampSamples(vector<sf::Int16>& sample, float frac)
 		sample.at(i) *= dampen;
 		--n;
 	}
+}
+
+int WaveParameters::TestAddMethod(int a, int b)
+{
+	return a + b;
 }

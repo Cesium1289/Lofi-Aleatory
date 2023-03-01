@@ -4,6 +4,7 @@
 #include <string>
 #include<vector>
 #include<SFML/Audio.hpp>
+
 using std::string;
 using std::vector;
 
@@ -38,6 +39,7 @@ class WaveParameters
 		void RampSamples(vector<sf::Int16>& sample, float frac);
 		float WaveFunc(float pos, int type);
 		void display();
+		int TestAddMethod(int a, int b);
 	private:
 		struct Parameters
 		{
