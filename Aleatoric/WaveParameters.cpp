@@ -306,6 +306,18 @@ float WaveParameters::WaveFunc(float pos, int type)
 	return 0;
 }
 
+void WaveParameters::display()
+{
+	cout << "\n-_-_-Values used-_-_-\n";
+	cout << "Root: " << parameters.rootKey << endl;
+	cout << "BPM: " << parameters.beatsPerMinute << endl;
+	cout << "Ramp: " << parameters.ramp << endl;
+	cout << "Volume: " << parameters.volume << endl;
+	cout << "Key: " << parameters.key << endl;
+	cout << "waveType: " << parameters.waveType << endl;
+	cout << "Random: " << parameters.random << endl;
+}
+
 //Calculate the beat time for the attack and release time for the note envelope
 void WaveParameters::RampSamples(vector<sf::Int16>& sample, float frac)
 {

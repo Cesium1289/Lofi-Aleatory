@@ -7,16 +7,18 @@ using std::vector;
 class WaveGenerator
 {
 public:
-	void playWave(WaveParameters&);
+	void playWave(WaveParameters& args, sf::SoundBuffer& lofiSample);
+	void stopWave();
 private:
+	sf::SoundBuffer lofiSample;
+	sf::Sound sound;
 	void GenerateSawWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
 	void GenerateSineWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
 	void GenerateSquareWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
 	void GenerateTriangleWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
 	float GenerateAmplitude(float volume);
 	void GenerateWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer);
-
-	void CalculateFrequency(float freqArray[], vector<int>& scaleArray, int rootKey);
+	void CalculateFrequency(vector<float>& freqArray, vector<int>& scaleArray, int rootKey);
 	float WaveFunc(float pos, int type);
 	void RampSamples(vector<sf::Int16>& sample, float frac);
 	void fillMajorArray(vector<int>& scaleArray, char key);
