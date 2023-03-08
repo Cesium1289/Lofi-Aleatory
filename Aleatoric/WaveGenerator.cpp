@@ -112,6 +112,8 @@ float WaveGenerator::GenerateAmplitude(float volume)
 
 void WaveGenerator::GenerateWave(WaveParameters& params, float freq, sf::SoundBuffer& buffer)
 {
+	if (params.parameters.random)
+		params.parameters.waveType = static_cast<waveEnum>(rand() % 4);
 	if (params.parameters.waveType == sine)
 		GenerateSineWave(params, freq, buffer);
 	else if (params.parameters.waveType == triangle)
