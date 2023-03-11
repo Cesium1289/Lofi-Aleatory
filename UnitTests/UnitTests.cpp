@@ -13,15 +13,15 @@ namespace UnitTests
 		
 		TEST_METHOD(TestAddMethod)
 		{
-			//WaveParameters WP;
+			WaveParameters WP;
 			int a = 2;
 			int b = 2;
 			int expected = 4;
 
 			// Actual value
-			//int actual = WP.TestAddMethod(a, b);
+			int actual = WP.TestAddMethod(a, b);
 			
-			Assert::AreEqual(expected, 4, L" Expected Sum : 4 ", LINE_INFO());
+			Assert::AreEqual(expected, actual, L" Expected Sum : 4 ", LINE_INFO());
 		}
 
 		TEST_METHOD(TestSimpleAdd)
