@@ -140,11 +140,11 @@ namespace UnitTests
 			// Reference to WaveParameters class
 			WaveParameters WP;
 			// Expected float after parsing from string format
-			int expected = 4.0;
+			float expected = 4.0;
 			// Float '4.0' in string format
 			string testString = "[4.0]";
 
-			int actual = WP.ParseStringToFloat(testString);
+			float actual = WP.ParseStringToFloat(testString);
 
 			Assert::AreEqual(expected, actual, L" Expected Float: 4.0 ", LINE_INFO());
 
