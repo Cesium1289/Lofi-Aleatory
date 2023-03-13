@@ -8,7 +8,7 @@ class WaveGenerator
 {
 public:
 	void playWave(WaveParameters& args, sf::SoundBuffer& lofiSample);
-	void stopWave();
+	void stopWave(sf::Sound& sound);
 private:
 	sf::SoundBuffer lofiSample;
 	sf::Sound sound;

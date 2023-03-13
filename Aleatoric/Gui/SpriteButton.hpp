@@ -24,6 +24,8 @@ public:
 
     void setTexture(const sf::Texture& texture);
 
+    void toggleTexture(const sf::Texture&);
+
     void onStateChanged(State state) override;
     void onMouseMoved(float x, float y) override;
     void onMousePressed(float x, float y) override;

@@ -12,20 +12,22 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	sf::SoundBuffer sound;
+	sf::SoundBuffer soundBuffer;
+	sf::Sound sounds;
 	WaveParameters params;
 	WaveGenerator wave;
 	bool randomize = false;
+	bool playing = false;
 
 	// Create the main window
-	sf::RenderWindow app(sf::VideoMode(1500, 1030), "Lofi-Aleatory", sf::Style::Close);
+	sf::RenderWindow app(sf::VideoMode(1200, 840), "Lofi-Aleatory", sf::Style::Close);
 	app.setFramerateLimit(30);
 
 	gui::Menu menu(app);
 	menu.setPosition(0, 0);
 
 	gui::Theme::loadFont("Assets/Georama-Semibold.ttf");
-	gui::Theme::textSize = 100;
+	gui::Theme::textSize = 65;
 	gui::Theme::PADDING = 40.0f;
 	gui::Theme::MARGIN = 10.0f;
 	gui::Theme::windowBgColor = sf::Color(210, 230, 240, 255);
@@ -41,6 +43,8 @@ int main(int argc, char** argv)
 	titleAndDescription->add(titleCard);
 	titleAndDescription->add(descriptionCard);
 
+	
+
 	//Main interface
 	gui::HBoxLayout* main = menu.addHBoxLayout();
 	gui::VBoxLayout* col1 = main->addVBoxLayout();
@@ -48,38 +52,37 @@ int main(int argc, char** argv)
 	gui::VBoxLayout* col3 = main->addVBoxLayout();
 
 
-	//Root note selector
-	gui::HBoxLayout* rootSelector = col2->addHBoxLayout();
-	gui::TextBox* rootTextBox = new gui::TextBox(390);
-	rootTextBox->setText("45");
-	rootTextBox->setMaxLength(3);
-	rootTextBox->setCallback([&]() {
-		try {
-		params.setRootKey(stoi(static_cast<string>(rootTextBox->getText())));
-	}
-	catch (const std::exception& e) {
-		cout << e.what() << endl;
-	};
+
+
+	// Slider for root
+	gui::HBoxLayout* rootSelector = col3->addHBoxLayout();
+	gui::Slider* rootSlider = new gui::Slider(288.0f, gui::Horizontal);
+	rootSlider->setStep(1);
+	rootSlider->setValue(25);
+	rootSlider->setCallback([&]() {
+		int input = rootSlider->getValue() * 0.94 + 21;
+		params.setRootKey(input);
+		params.SetRootKeyCharacter(input);
 	params.display();
 		});
 
-	sf::Texture rootTextBoxTexture;
-	rootTextBoxTexture.loadFromFile("Assets/labels-10.png");
-	gui::Image* rootLabel = new gui::Image(rootTextBoxTexture);
+	sf::Texture rootLabelTexture;
+	rootLabelTexture.loadFromFile("Assets/labels-10.png");
+	gui::Image* rootLabel = new gui::Image(rootLabelTexture);
 
 	rootSelector->add(rootLabel);
-	rootSelector->add(rootTextBox);
+	rootSelector->add(rootSlider);
 
 
 
 
 	// Slider for ramp
 	gui::HBoxLayout* rampSelector = col3->addHBoxLayout();
-	gui::Slider* rampSlider = new gui::Slider(360.0f, gui::Horizontal);
+	gui::Slider* rampSlider = new gui::Slider(288.0f, gui::Horizontal);
 	rampSlider->setStep(1);
+	rampSlider->setValue(100);
 	rampSlider->setCallback([&]() {
 		params.setRamp(rampSlider->getValue() * 0.005f);
-	cout << rampSelector->getAbsolutePosition().x << endl;
 	params.display();
 		});
 
@@ -93,10 +96,10 @@ int main(int argc, char** argv)
 
 	// Slider for BMP
 	gui::HBoxLayout* bpmSelector = col3->addHBoxLayout();
-	gui::Slider* bpmSlider = new gui::Slider(360.0f, gui::Horizontal);
+	gui::Slider* bpmSlider = new gui::Slider(288.0f, gui::Horizontal);
 	bpmSlider->setStep(1);
 	bpmSlider->setCallback([&]() {
-		params.setBPM(bpmSlider->getValue() * 2.4);
+		params.setBPM(bpmSlider->getValue() * 2.2 + 20);
 	params.display();
 		});
 
@@ -110,8 +113,9 @@ int main(int argc, char** argv)
 
 	// Slider for Volume
 	gui::HBoxLayout* volSelector = col3->addHBoxLayout();
-	gui::Slider* volSlider = new gui::Slider(360.0f, gui::Horizontal);
+	gui::Slider* volSlider = new gui::Slider(288.0f, gui::Horizontal);
 	volSlider->setStep(1);
+	volSlider->setValue(80);
 	volSlider->setCallback([&]() {
 		params.setVolume(volSlider->getValue() * 0.1);
 	params.display();
@@ -131,14 +135,26 @@ int main(int argc, char** argv)
 	col2->add(playButton);
 	playButton->setCallback([&]
 		{
-			try {
-			params.setRootKey(stoi(static_cast<string>(rootTextBox->getText())));
-		}
-			catch (const std::exception& e) {
-			cout << e.what() << endl;
-	}
-	//wave.playWave(params);
+			if (sounds.getStatus() != sf::Sound::Playing)
+			playing = true;
 		});
+
+	//Stop button
+	sf::Texture stopButtonBackground;
+	sf::Texture stopButtonActive;
+	bool isStop = false;
+	sf::Texture random;
+	stopButtonBackground.loadFromFile("Assets/stopButtonSprites.png");
+	stopButtonActive.loadFromFile("Assets/randomButtonSprites.png");
+	gui::SpriteButton* stopButton = new gui::SpriteButton(stopButtonBackground);
+	col2->add(stopButton);
+	stopButton->setCallback([&]()
+		{
+			playing = false;
+			stopButton->toggleTexture(stopButtonBackground);
+			wave.stopWave(sounds);
+		}
+	);
 
 
 	//Randomize button
@@ -154,6 +170,12 @@ int main(int argc, char** argv)
 	params.display();
 		});
 
+	sf::Texture toolTipCardTexture;
+	toolTipCardTexture.loadFromFile("Assets/toolTipSprites.png");
+	gui::Image* toolTipCard = new gui::Image(toolTipCardTexture);
+	col2->add(toolTipCard);
+
+
 
 	// Sine wave button
 	sf::Texture sineWaveBackground;
@@ -162,7 +184,7 @@ int main(int argc, char** argv)
 	sineWaveButton->setTextSize(10);
 	col1->add(sineWaveButton);
 	sineWaveButton->setCallback([&] {
-		std::cout << "click!" << std::endl;
+		sineWaveButton->toggleTexture(sineWaveBackground);
 	params.setWaveType("sine");
 	params.display();
 		});
@@ -174,7 +196,6 @@ int main(int argc, char** argv)
 	squareWaveButton->setTextSize(10);
 	col1->add(squareWaveButton);
 	squareWaveButton->setCallback([&] {
-		std::cout << "click!" << std::endl;
 	params.setWaveType("square");
 	params.display();
 		});
@@ -186,7 +207,6 @@ int main(int argc, char** argv)
 	sawWaveButton->setTextSize(10);
 	col1->add(sawWaveButton);
 	sawWaveButton->setCallback([&] {
-		std::cout << "click!" << std::endl;
 	params.setWaveType("saw");
 	params.display();
 		});
@@ -198,12 +218,10 @@ int main(int argc, char** argv)
 	triangleWaveButton->setTextSize(10);
 	col1->add(triangleWaveButton);
 	triangleWaveButton->setCallback([&] {
-		std::cout << "click!" << std::endl;
 	params.setWaveType("triangle");
 	params.display();
 		});
 
-	sf::Sound sounds;
 	// Start the application loop
 	while (app.isOpen())
 	{
@@ -221,10 +239,10 @@ int main(int argc, char** argv)
 		app.clear(gui::Theme::windowBgColor);
 		app.draw(menu);
 		// Update the window
-		while (sounds.getStatus() != sf::Sound::Playing)
+		while (playing && sounds.getStatus() != sf::Sound::Playing)
 		{
-			wave.playWave(params, sound);
-			sounds.setBuffer(sound);
+			wave.playWave(params, soundBuffer);
+			sounds.setBuffer(soundBuffer);
 			sounds.play();
 		}
 		app.display();
@@ -232,3 +250,4 @@ int main(int argc, char** argv)
 
 	return EXIT_SUCCESS;
 }
+

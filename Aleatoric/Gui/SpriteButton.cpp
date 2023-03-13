@@ -55,6 +55,24 @@ void SpriteButton::setTextSize(size_t size)
     centerText(m_text);
 }
 
+void SpriteButton::setTexture(const sf::Texture& texture)
+{
+    size_t width = texture.getSize().x;
+    size_t height = texture.getSize().y / 3; // default, hover, focus
+
+    m_background.setTexture(texture);
+    m_background.setTextureRect(sf::IntRect(0, 0, width, height));
+}
+
+void SpriteButton::toggleTexture(const sf::Texture& texture) {
+    m_background.setTexture(texture);
+    sf::Vector2f size = getSize();
+    static bool enabled = false;
+    if (enabled)
+        m_background.setTextureRect(sf::IntRect(0, 0, size.x, size.y));
+    else
+        m_background.setTextureRect(sf::IntRect(0, 2*size.y, size.x, 2*size.y));
+}
 
 void SpriteButton::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
@@ -78,6 +96,7 @@ void SpriteButton::onStateChanged(State state)
         m_background.setTextureRect(sf::IntRect(0, size.y, size.x, size.y));
         break;
     case StatePressed:
+        m_background.setTextureRect(sf::IntRect(0, size.y, size.x, size.y));
     case StateFocused:
         m_background.setTextureRect(sf::IntRect(0, size.y * 2, size.x, size.y));
         break;
