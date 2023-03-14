@@ -27,11 +27,6 @@ class WaveParameters
 		int ParseStringToInt(string& arg);
 		void ParseStringToString(string& arg);
 		void GenerateRandomWave(float frequency, sf::SoundBuffer& Wave);
-		void GenerateRandomParameters();
-		void GenerateRandomBeatsPerMinute();
-		void GenerateRandomRamp();
-		void GenerateRandomWaveType();
-		
 		void setRootKey(int);
 		void setBPM(float);
 		void setVolume(float);
