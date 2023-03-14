@@ -4,6 +4,8 @@
 #include<cmath>
 #include<cstdlib>
 #include <stdlib.h>
+#include <random>
+
 
 const int NUM_SAMPLES = 48000;
 const int NUM_KEYS = 7;
@@ -202,6 +204,139 @@ void WaveParameters::ParseStringToString(string& arg)
 	arg.erase(pos);
 }
 
+void WaveParameters::GenerateRandomParameters()
+{
+	// Generate a random key value and a corresponding root key value 
+	GenerateRandomRootKeyAndKey();
+
+	// Generate random beats per minute from 0.1 to 75
+	GenerateRandomBeatsPerMinute();
+
+	// Generate random beats per minute from 0.0 to 0.5
+	GenerateRandomRamp();
+
+	// Keep volume at 5 so it is audible every time random sound is created
+	parameters.volume = 5.0f;
+
+	// Generate random wave type e.g. sine, square, saw, or triangle
+	GenerateRandomWaveType();
+
+	// Set random value boolean to true everytime this method is called
+	parameters.random = true;
+}
+
+void WaveParameters::GenerateRandomRootKeyAndKey()
+{
+	// RootKey 'a' values
+	int rootKeyA[] = { 21, 33, 45, 57, 69, 81, 93, 105 };
+	// RootKey 'b' values
+	int rootKeyB[] = { 23, 35, 47, 59, 71, 83, 95, 107 };
+	// RootKey 'c' values
+	int rootKeyC[] = { 24, 36, 48, 60, 72, 84, 96, 108 };
+	// RootKey 'd' values
+	int rootKeyD[] = { 26, 38, 50, 62, 74, 86, 98, 110 };
+	// RootKey 'e' values
+	int rootKeyE[] = { 28, 40, 52, 64, 76, 88, 100, 112 };
+	// RootKey 'f' values
+	int rootKeyF[] = { 29, 41, 53, 65, 77, 89, 101, 113 };
+	// RootKey 'g' values
+	int rootKeyG[] = { 31, 43, 55, 67, 79, 91, 103, 115 };
+
+
+	// Random integer between values 1 and 7
+	int randKey = rand() % 7 + 1;
+
+	// Random integer between values 0 and 7 
+	// This random value is used to select a random index out of each rootKey array with their corresponding value
+	int randRootKey = rand() % 8;
+
+	// Change the parameter key type depending on the value 1 through 7 along with a random rootKey value
+	switch (randKey)
+	{
+	case 1:
+		parameters.key = 'a';
+		parameters.rootKey = rootKeyA[randRootKey];
+		break;
+	case 2:
+		parameters.key = 'b';
+		parameters.rootKey = rootKeyB[randRootKey];
+		break;
+	case 3:
+		parameters.key = 'c';
+		parameters.rootKey = rootKeyC[randRootKey];
+		break;
+	case 4:
+		parameters.key = 'd';
+		parameters.rootKey = rootKeyD[randRootKey];
+		break;
+	case 5:
+		parameters.key = 'e';
+		parameters.rootKey = rootKeyE[randRootKey];
+		break;
+	case 6:
+		parameters.key = 'f';
+		parameters.rootKey = rootKeyF[randRootKey];
+		break;
+	case 7:
+		parameters.key = 'g';
+		parameters.rootKey = rootKeyG[randRootKey];
+		break;
+	}
+
+}
+
+void WaveParameters::GenerateRandomBeatsPerMinute()
+{
+	// Use <random> library to create a random range in floats for bpm (20.f to 240.0f)
+	std::random_device randDevice;
+	std::mt19937 generator(randDevice());
+	std::uniform_real_distribution<float> distribution(20.0f, 240.0f);
+
+	// Random volume
+	float randBPM = distribution(generator);
+
+	// Setting random WaveParameter to the random bpm
+	parameters.beatsPerMinute = randBPM;
+}
+
+void WaveParameters::GenerateRandomRamp()
+{
+	// Use <random> library to create a random range in floats for ramp (0.0f to 0.5f)
+	std::random_device randDevice;
+	std::mt19937 generator(randDevice());
+	std::uniform_real_distribution<float> distribution(0.0f, 0.5f);
+
+	// Random ramp 
+	float randRamp = distribution(generator);
+
+	// Setting random WaveParameter to the random ramp
+	parameters.ramp = randRamp;
+}
+
+void WaveParameters::GenerateRandomWaveType()
+{
+	// Random integer between values 1 and 4
+	int randWaveType = rand() % 4 + 1;
+
+	// Change the parameter wave type depending on the value 1 through 4
+	switch (randWaveType)
+	{
+	case 1:
+		parameters.waveType = sine;
+		break;
+	case 2:
+		parameters.waveType = square;
+		break;
+	case 3:
+		parameters.waveType = saw;
+		break;
+	case 4:
+		parameters.waveType = triangle;
+		break;
+	}
+
+}
+
 
 void WaveParameters::GenerateRandomWave(float frequency, sf::SoundBuffer& Wave)
 {
@@ -289,6 +424,17 @@ float WaveParameters::GetBPM()
 	return parameters.beatsPerMinute;
 }
 
+
+int WaveParameters::GetRootKey()
+{
+	return parameters.rootKey;
+}
+
+int WaveParameters::GetWaveType()
+{
+	return parameters.waveType;
+}
+
 float WaveParameters::WaveFunc(float pos, int type)
 {
 	//sine wave
@@ -365,3 +511,4 @@ int WaveParameters::TestAddMethod(int a, int b)
 {
 	return a + b;
 }
+

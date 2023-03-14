@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 
 	// Create the main window
 	sf::RenderWindow app(sf::VideoMode(1210, 840), "Lofi-Aleatory", sf::Style::Close);
-	app.setFramerateLimit(30);
+	app.setFramerateLimit(60);
 
 	gui::Menu menu(app);
 	menu.setPosition(0, 0);
@@ -65,13 +65,7 @@ int main(int argc, char** argv)
 	gui::SpriteButton* sineWaveButton = new gui::SpriteButton(sineWaveBackground, sineWaveActiveBackground);
 	sineWaveButton->setTextSize(10);
 	col1->add(sineWaveButton);
-	sineWaveButton->setCallback([&] {
-		activeWaveButton->toggle();
-		activeWaveButton = sineWaveButton;
-	activeWaveButton->toggle();
-	params.setWaveType("sine");
-	params.display();
-		});
+	
 
 	//Square wave button
 	sf::Texture squareWaveBackground;
@@ -81,13 +75,7 @@ int main(int argc, char** argv)
 	gui::SpriteButton* squareWaveButton = new gui::SpriteButton(squareWaveBackground, squareWaveActiveBackground);
 	squareWaveButton->setTextSize(10);
 	col1->add(squareWaveButton);
-	squareWaveButton->setCallback([&] {
-		activeWaveButton->toggle();
-	activeWaveButton = squareWaveButton;
-	activeWaveButton->toggle();
-		params.setWaveType("square");
-	params.display();
-		});
+	
 
 	//Saw wave button
 	sf::Texture sawWaveBackground;
@@ -97,13 +85,7 @@ int main(int argc, char** argv)
 	gui::SpriteButton* sawWaveButton = new gui::SpriteButton(sawWaveBackground, sawWaveActiveBackground);
 	sawWaveButton->setTextSize(10);
 	col1->add(sawWaveButton);
-	sawWaveButton->setCallback([&] {
-		activeWaveButton->toggle();
-	activeWaveButton = sawWaveButton;
-	activeWaveButton->toggle();
-		params.setWaveType("saw");
-	params.display();
-		});
+	
 
 	//Triangle wave button
 	sf::Texture triangleWaveBackground;
@@ -113,13 +95,7 @@ int main(int argc, char** argv)
 	gui::SpriteButton* triangleWaveButton = new gui::SpriteButton(triangleWaveBackground, triangleWaveActiveBackground);
 	triangleWaveButton->setTextSize(10);
 	col1->add(triangleWaveButton);
-	triangleWaveButton->setCallback([&] {
-		params.setWaveType("triangle");
-	activeWaveButton->toggle();
-	activeWaveButton = triangleWaveButton;
-	activeWaveButton->toggle();
-	params.display();
-		});
+	
 
 	//---- Column 2 buttons: Sound control ----//
 
@@ -145,32 +121,9 @@ int main(int argc, char** argv)
 	gui::SpriteButton* randomButton = new gui::SpriteButton(randomButtonBackground, randomButtonActiveBackground);
 
 	col2->add(playButton);
-	playButton->setCallback([&] {
-		if (sounds.getStatus() != sf::Sound::Playing) {
-			playing = true;
-			playButton->toggle();
-		};
-	if (stopButton->isActive())
-		stopButton->toggle();
-	});
-
 	col2->add(stopButton);
-	stopButton->setCallback([&](){
-		playing = false;
-		stopButton->toggle();
-		playButton->toggle();
-		wave.stopWave(sounds);
-	});
-
-
 	col2->add(randomButton);
-	randomButton->setCallback([&]{
-		std::cout << "click!" << std::endl;
-		randomize = !randomize;
-		randomButton->toggle();
-		params.setRandom(randomize);
-		params.display();
-	});
+	
 
 	sf::Texture toolTipCardTexture;
 	toolTipCardTexture.loadFromFile("Assets/toolTipSprites.png");
@@ -185,12 +138,7 @@ int main(int argc, char** argv)
 	gui::Slider* rootSlider = new gui::Slider(288.0f, gui::Horizontal);
 	rootSlider->setStep(1);
 	rootSlider->setValue(25);
-	rootSlider->setCallback([&]() {
-		int input = rootSlider->getValue() * 0.94 + 21;
-		params.setRootKey(input);
-		params.SetRootKeyCharacter(input);
-	params.display();
-		});
+	
 
 	sf::Texture rootLabelTexture;
 	rootLabelTexture.loadFromFile("Assets/labels-10.png");
@@ -207,10 +155,6 @@ int main(int argc, char** argv)
 	gui::Slider* rampSlider = new gui::Slider(288.0f, gui::Horizontal);
 	rampSlider->setStep(1);
 	rampSlider->setValue(100);
-	rampSlider->setCallback([&]() {
-		params.setRamp(rampSlider->getValue() * 0.005f);
-	params.display();
-		});
 
 	sf::Texture rampLabelTexture;
 	rampLabelTexture.loadFromFile("Assets/labels-07.png");
@@ -224,11 +168,7 @@ int main(int argc, char** argv)
 	gui::HBoxLayout* bpmSelector = col3->addHBoxLayout();
 	gui::Slider* bpmSlider = new gui::Slider(288.0f, gui::Horizontal);
 	bpmSlider->setStep(1);
-	bpmSlider->setCallback([&]() {
-		params.setBPM(bpmSlider->getValue() * 2.2 + 20);
-	params.display();
-		});
-
+	
 	sf::Texture bpmLabelTexture;
 	bpmLabelTexture.loadFromFile("Assets/labels-08.png");
 	gui::Image* bpmLabel = new gui::Image(bpmLabelTexture);
@@ -242,11 +182,7 @@ int main(int argc, char** argv)
 	gui::Slider* volSlider = new gui::Slider(288.0f, gui::Horizontal);
 	volSlider->setStep(1);
 	volSlider->setValue(80);
-	volSlider->setCallback([&]() {
-		params.setVolume(volSlider->getValue() * 0.1);
-	params.display();
-		});
-
+	
 	sf::Texture volLabelTexture;
 	volLabelTexture.loadFromFile("Assets/labels-09.png");
 	gui::Image* volLabel = new gui::Image(volLabelTexture);
@@ -254,7 +190,106 @@ int main(int argc, char** argv)
 	volSelector->add(volLabel);
 	volSelector->add(volSlider);
 
+	//-- Callbacks for buttons and sliders
+	sineWaveButton->setCallback([&] {
+		activeWaveButton->toggle();
+	activeWaveButton = sineWaveButton;
+	activeWaveButton->toggle();
+	params.setWaveType("sine");
+	params.display();
+		});
 
+	squareWaveButton->setCallback([&] {
+		activeWaveButton->toggle();
+	activeWaveButton = squareWaveButton;
+	activeWaveButton->toggle();
+		params.setWaveType("square");
+	params.display();
+		});
+
+	sawWaveButton->setCallback([&] {
+		activeWaveButton->toggle();
+	activeWaveButton = sawWaveButton;
+	activeWaveButton->toggle();
+	params.setWaveType("saw");
+	params.display();
+		});
+
+	triangleWaveButton->setCallback([&] {
+		params.setWaveType("triangle");
+	activeWaveButton->toggle();
+	activeWaveButton = triangleWaveButton;
+	activeWaveButton->toggle();
+	params.display();
+		});
+
+	playButton->setCallback([&] {
+		if (sounds.getStatus() != sf::Sound::Playing) {
+			playing = true;
+			playButton->toggle();
+		};
+	if (stopButton->isActive())
+		stopButton->toggle();
+		});
+
+	stopButton->setCallback([&]() {
+		playing = false;
+	stopButton->toggle();
+	playButton->toggle();
+	wave.stopWave(sounds);
+		});
+
+	randomButton->setCallback([&] {
+		std::cout << "click!" << std::endl;
+	randomize = !randomize;
+	params.GenerateRandomParameters();
+	bpmSlider->setValue((params.GetBPM() - 20) / 2.2);
+	rootSlider->setValue((params.GetRootKey() - 21) * 100 / 82);
+	rampSlider->setValue(params.GetRamp() * 200);
+	int waveType = params.GetWaveType();
+	activeWaveButton->toggle();
+	switch (waveType) {
+		case 0:
+			activeWaveButton = sineWaveButton;
+			break;
+		case 1:
+			activeWaveButton = squareWaveButton;
+			break;
+		case 2:
+			activeWaveButton = triangleWaveButton;
+			break;
+		case 3:
+			activeWaveButton = sawWaveButton;
+			break;
+	}
+	activeWaveButton->toggle();
+	params.display();
+		});
+
+	rootSlider->setCallback([&]() {
+		int input = rootSlider->getValue() * 0.82 + 21;
+	params.setRootKey(input);
+	params.SetRootKeyCharacter(input);
+	params.display();
+		});
+
+	rampSlider->setCallback([&]() {
+		params.setRamp(rampSlider->getValue() * 0.005f);
+	params.display();
+		});
+
+	bpmSlider->setCallback([&]() {
+		params.setBPM(bpmSlider->getValue() * 2.2 + 20);
+	params.display();
+		});
+
+	volSlider->setCallback([&]() {
+		params.setVolume(volSlider->getValue() * 0.1);
+	params.display();
+		});
+
+	activeWaveButton = sawWaveButton;
+	activeWaveButton->toggle();
 	// Start the application loop
 	while (app.isOpen())
 	{
