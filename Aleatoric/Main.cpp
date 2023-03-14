@@ -19,8 +19,12 @@ int main(int argc, char** argv)
 	bool randomize = false;
 	bool playing = false;
 
+	sf::Texture emptyButtonTexture;
+	emptyButtonTexture.loadFromFile("Assets/emptyButtonSprites");
+	gui::SpriteButton* activeWaveButton = new gui::SpriteButton(emptyButtonTexture, emptyButtonTexture);
+
 	// Create the main window
-	sf::RenderWindow app(sf::VideoMode(1200, 840), "Lofi-Aleatory", sf::Style::Close);
+	sf::RenderWindow app(sf::VideoMode(1210, 840), "Lofi-Aleatory", sf::Style::Close);
 	app.setFramerateLimit(30);
 
 	gui::Menu menu(app);
@@ -51,8 +55,130 @@ int main(int argc, char** argv)
 	gui::VBoxLayout* col2 = main->addVBoxLayout();
 	gui::VBoxLayout* col3 = main->addVBoxLayout();
 
+	//---- Column 1 buttons: Wave Selector ----//
+
+	// Sine wave button
+	sf::Texture sineWaveBackground;
+	sf::Texture sineWaveActiveBackground;
+	sineWaveBackground.loadFromFile("Assets/sineWaveSprite.png");
+	sineWaveActiveBackground.loadFromFile("Assets/sineWaveActiveSprite.png");
+	gui::SpriteButton* sineWaveButton = new gui::SpriteButton(sineWaveBackground, sineWaveActiveBackground);
+	sineWaveButton->setTextSize(10);
+	col1->add(sineWaveButton);
+	sineWaveButton->setCallback([&] {
+		activeWaveButton->toggle();
+		activeWaveButton = sineWaveButton;
+	activeWaveButton->toggle();
+	params.setWaveType("sine");
+	params.display();
+		});
+
+	//Square wave button
+	sf::Texture squareWaveBackground;
+	sf::Texture squareWaveActiveBackground;
+	squareWaveBackground.loadFromFile("Assets/squareWaveSprite.png");
+	squareWaveActiveBackground.loadFromFile("Assets/squareWaveActiveSprite.png");
+	gui::SpriteButton* squareWaveButton = new gui::SpriteButton(squareWaveBackground, squareWaveActiveBackground);
+	squareWaveButton->setTextSize(10);
+	col1->add(squareWaveButton);
+	squareWaveButton->setCallback([&] {
+		activeWaveButton->toggle();
+	activeWaveButton = squareWaveButton;
+	activeWaveButton->toggle();
+		params.setWaveType("square");
+	params.display();
+		});
+
+	//Saw wave button
+	sf::Texture sawWaveBackground;
+	sf::Texture sawWaveActiveBackground;
+	sawWaveBackground.loadFromFile("Assets/sawWaveSprite.png");
+	sawWaveActiveBackground.loadFromFile("Assets/sawWaveActiveSprite.png");
+	gui::SpriteButton* sawWaveButton = new gui::SpriteButton(sawWaveBackground, sawWaveActiveBackground);
+	sawWaveButton->setTextSize(10);
+	col1->add(sawWaveButton);
+	sawWaveButton->setCallback([&] {
+		activeWaveButton->toggle();
+	activeWaveButton = sawWaveButton;
+	activeWaveButton->toggle();
+		params.setWaveType("saw");
+	params.display();
+		});
+
+	//Triangle wave button
+	sf::Texture triangleWaveBackground;
+	sf::Texture triangleWaveActiveBackground;
+	triangleWaveBackground.loadFromFile("Assets/triangleWaveSprite.png");
+	triangleWaveActiveBackground.loadFromFile("Assets/triangleWaveActiveSprite.png");
+	gui::SpriteButton* triangleWaveButton = new gui::SpriteButton(triangleWaveBackground, triangleWaveActiveBackground);
+	triangleWaveButton->setTextSize(10);
+	col1->add(triangleWaveButton);
+	triangleWaveButton->setCallback([&] {
+		params.setWaveType("triangle");
+	activeWaveButton->toggle();
+	activeWaveButton = triangleWaveButton;
+	activeWaveButton->toggle();
+	params.display();
+		});
+
+	//---- Column 2 buttons: Sound control ----//
+
+	//Play button
+	sf::Texture playButtonBackground;
+	sf::Texture playButtonActiveBackground;
+	playButtonBackground.loadFromFile("Assets/playButtonSprites.png");
+	playButtonActiveBackground.loadFromFile("Assets/playButtonActiveSprites.png");
+	gui::SpriteButton* playButton = new gui::SpriteButton(playButtonBackground, playButtonActiveBackground);
+
+	//Stop button
+	sf::Texture stopButtonBackground;
+	sf::Texture stopButtonActiveBackground;
+	stopButtonBackground.loadFromFile("Assets/stopButtonSprites.png");
+	stopButtonActiveBackground.loadFromFile("Assets/stopButtonActiveSprites.png");
+	gui::SpriteButton* stopButton = new gui::SpriteButton(stopButtonBackground, stopButtonActiveBackground);
+
+	//Randomize button
+	sf::Texture randomButtonBackground;
+	sf::Texture randomButtonActiveBackground;
+	randomButtonBackground.loadFromFile("Assets/randomButtonSprites.png");
+	randomButtonActiveBackground.loadFromFile("Assets/randomButtonActiveSprites.png");
+	gui::SpriteButton* randomButton = new gui::SpriteButton(randomButtonBackground, randomButtonActiveBackground);
+
+	col2->add(playButton);
+	playButton->setCallback([&] {
+		if (sounds.getStatus() != sf::Sound::Playing) {
+			playing = true;
+			playButton->toggle();
+		};
+	if (stopButton->isActive())
+		stopButton->toggle();
+	});
+
+	col2->add(stopButton);
+	stopButton->setCallback([&](){
+		playing = false;
+		stopButton->toggle();
+		playButton->toggle();
+		wave.stopWave(sounds);
+	});
 
 
+	col2->add(randomButton);
+	randomButton->setCallback([&]{
+		std::cout << "click!" << std::endl;
+		randomize = !randomize;
+		randomButton->toggle();
+		params.setRandom(randomize);
+		params.display();
+	});
+
+	sf::Texture toolTipCardTexture;
+	toolTipCardTexture.loadFromFile("Assets/toolTipSprites.png");
+	gui::Image* toolTipCard = new gui::Image(toolTipCardTexture);
+	col2->add(toolTipCard);
+
+
+	//---- Column 3 sliders: change sound parameters ----//
 
 	// Slider for root
 	gui::HBoxLayout* rootSelector = col3->addHBoxLayout();
@@ -128,99 +254,6 @@ int main(int argc, char** argv)
 	volSelector->add(volLabel);
 	volSelector->add(volSlider);
 
-	//Play button
-	sf::Texture playButtonBackground;
-	playButtonBackground.loadFromFile("Assets/playButtonSprites.png");
-	gui::SpriteButton* playButton = new gui::SpriteButton(playButtonBackground);
-	col2->add(playButton);
-	playButton->setCallback([&]
-		{
-			if (sounds.getStatus() != sf::Sound::Playing)
-			playing = true;
-		});
-
-	//Stop button
-	sf::Texture stopButtonBackground;
-	sf::Texture stopButtonActive;
-	bool isStop = false;
-	sf::Texture random;
-	stopButtonBackground.loadFromFile("Assets/stopButtonSprites.png");
-	stopButtonActive.loadFromFile("Assets/randomButtonSprites.png");
-	gui::SpriteButton* stopButton = new gui::SpriteButton(stopButtonBackground);
-	col2->add(stopButton);
-	stopButton->setCallback([&]()
-		{
-			playing = false;
-			stopButton->toggleTexture(stopButtonBackground);
-			wave.stopWave(sounds);
-		}
-	);
-
-
-	//Randomize button
-	sf::Texture randomButtonBackground;
-	randomButtonBackground.loadFromFile("Assets/randomButtonSprites.png");
-	gui::SpriteButton* randomButton = new gui::SpriteButton(randomButtonBackground);
-	randomButton->setTextSize(10);
-	col2->add(randomButton);
-	randomButton->setCallback([&] {
-		std::cout << "click!" << std::endl;
-	randomize = !randomize;
-	params.setRandom(randomize);
-	params.display();
-		});
-
-	sf::Texture toolTipCardTexture;
-	toolTipCardTexture.loadFromFile("Assets/toolTipSprites.png");
-	gui::Image* toolTipCard = new gui::Image(toolTipCardTexture);
-	col2->add(toolTipCard);
-
-
-
-	// Sine wave button
-	sf::Texture sineWaveBackground;
-	sineWaveBackground.loadFromFile("Assets/sineWaveSprite.png");
-	gui::SpriteButton* sineWaveButton = new gui::SpriteButton(sineWaveBackground);
-	sineWaveButton->setTextSize(10);
-	col1->add(sineWaveButton);
-	sineWaveButton->setCallback([&] {
-		sineWaveButton->toggleTexture(sineWaveBackground);
-	params.setWaveType("sine");
-	params.display();
-		});
-
-	//Square wave button
-	sf::Texture squareWaveBackground;
-	squareWaveBackground.loadFromFile("Assets/squareWaveSprite.png");
-	gui::SpriteButton* squareWaveButton = new gui::SpriteButton(squareWaveBackground);
-	squareWaveButton->setTextSize(10);
-	col1->add(squareWaveButton);
-	squareWaveButton->setCallback([&] {
-	params.setWaveType("square");
-	params.display();
-		});
-
-	//Saw wave button
-	sf::Texture sawWaveBackground;
-	sawWaveBackground.loadFromFile("Assets/sawWaveSprite.png");
-	gui::SpriteButton* sawWaveButton = new gui::SpriteButton(sawWaveBackground);
-	sawWaveButton->setTextSize(10);
-	col1->add(sawWaveButton);
-	sawWaveButton->setCallback([&] {
-	params.setWaveType("saw");
-	params.display();
-		});
-
-	//Triangle wave button
-	sf::Texture triangleWaveBackground;
-	triangleWaveBackground.loadFromFile("Assets/triangleWaveSprite.png");
-	gui::SpriteButton* triangleWaveButton = new gui::SpriteButton(triangleWaveBackground);
-	triangleWaveButton->setTextSize(10);
-	col1->add(triangleWaveButton);
-	triangleWaveButton->setCallback([&] {
-	params.setWaveType("triangle");
-	params.display();
-		});
 
 	// Start the application loop
 	while (app.isOpen())

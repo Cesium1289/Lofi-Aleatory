@@ -4,14 +4,14 @@
 namespace gui
 {
 
-SpriteButton::SpriteButton(const sf::Texture& texture, const sf::String& string):
+SpriteButton::SpriteButton(const sf::Texture& defaultTexture, const sf::Texture& activeTexture, const sf::String& string):
     Widget(),
     m_pressed(false)
 {
-    size_t width = texture.getSize().x;
-    size_t height = texture.getSize().y / 3; // default, hover, focus
+    size_t width = defaultTexture.getSize().x;
+    size_t height = defaultTexture.getSize().y / 3; // default, hover, focus
 
-    m_background.setTexture(texture);
+    m_background.setTexture(defaultTexture);
     m_background.setTextureRect(sf::IntRect(0, 0, width, height));
 
     setSize(width, height);
@@ -19,7 +19,15 @@ SpriteButton::SpriteButton(const sf::Texture& texture, const sf::String& string)
     m_text.setFont(Theme::getFont());
     m_text.setCharacterSize(Theme::textSize);
 
+    textures.first = defaultTexture;
+    textures.second = activeTexture;
+
     setString(string);
+}
+
+bool SpriteButton::isActive() const
+{
+    return m_active;
 }
 
 
@@ -64,14 +72,14 @@ void SpriteButton::setTexture(const sf::Texture& texture)
     m_background.setTextureRect(sf::IntRect(0, 0, width, height));
 }
 
-void SpriteButton::toggleTexture(const sf::Texture& texture) {
-    m_background.setTexture(texture);
+void SpriteButton::toggle() {
     sf::Vector2f size = getSize();
     static bool enabled = false;
-    if (enabled)
-        m_background.setTextureRect(sf::IntRect(0, 0, size.x, size.y));
+    if (m_active)
+        m_background.setTexture(textures.first);
     else
-        m_background.setTextureRect(sf::IntRect(0, 2*size.y, size.x, 2*size.y));
+        m_background.setTexture(textures.second);
+    m_active = !m_active;
 }
 
 void SpriteButton::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -2,6 +2,8 @@
 #define GUI_SPRITEBUTTON_HPP
 
 #include "Widget.hpp"
+#include <utility>
+using namespace std;
 
 namespace gui
 {
@@ -12,7 +14,9 @@ namespace gui
 class SpriteButton: public Widget
 {
 public:
-    SpriteButton(const sf::Texture& texture, const sf::String& label = "");
+    SpriteButton(const sf::Texture& defaultTexture, const sf::Texture& activeTexture, const sf::String& label = "");
+
+    bool isActive() const;
 
     void setString(const sf::String& string);
     const sf::String& getString() const;
@@ -24,7 +28,7 @@ public:
 
     void setTexture(const sf::Texture& texture);
 
-    void toggleTexture(const sf::Texture&);
+    void toggle();
 
     void onStateChanged(State state) override;
     void onMouseMoved(float x, float y) override;
@@ -40,7 +44,9 @@ private:
 
     sf::Text m_text;
     sf::Sprite m_background;
+    pair<sf::Texture, sf::Texture> textures;
     bool m_pressed;
+    bool m_active;
 };
 
 }
