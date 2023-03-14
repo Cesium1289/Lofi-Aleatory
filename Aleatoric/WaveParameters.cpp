@@ -252,34 +252,34 @@ void WaveParameters::GenerateRandomRootKeyAndKey()
 	// Change the parameter key type depending on the value 1 through 7 along with a random rootKey value
 	switch (randKey)
 	{
-	case 1:
-		parameters.key = 'a';
-		parameters.rootKey = rootKeyA[randRootKey];
-		break;
-	case 2:
-		parameters.key = 'b';
-		parameters.rootKey = rootKeyB[randRootKey];
-		break;
-	case 3:
-		parameters.key = 'c';
-		parameters.rootKey = rootKeyC[randRootKey];
-		break;
-	case 4:
-		parameters.key = 'd';
-		parameters.rootKey = rootKeyD[randRootKey];
-		break;
-	case 5:
-		parameters.key = 'e';
-		parameters.rootKey = rootKeyE[randRootKey];
-		break;
-	case 6:
-		parameters.key = 'f';
-		parameters.rootKey = rootKeyF[randRootKey];
-		break;
-	case 7:
-		parameters.key = 'g';
-		parameters.rootKey = rootKeyG[randRootKey];
-		break;
+		case 1:
+			parameters.key = 'a';
+			parameters.rootKey = rootKeyA[randRootKey];
+			break;
+		case 2:
+			parameters.key = 'b';
+			parameters.rootKey = rootKeyB[randRootKey];
+			break;
+		case 3:
+			parameters.key = 'c';
+			parameters.rootKey = rootKeyC[randRootKey];
+			break;
+		case 4:
+			parameters.key = 'd';
+			parameters.rootKey = rootKeyD[randRootKey];
+			break;
+		case 5:
+			parameters.key = 'e';
+			parameters.rootKey = rootKeyE[randRootKey];
+			break;
+		case 6:
+			parameters.key = 'f';
+			parameters.rootKey = rootKeyF[randRootKey];
+			break;
+		case 7:
+			parameters.key = 'g';
+			parameters.rootKey = rootKeyG[randRootKey];
+			break;
 	}
 
 }
@@ -320,18 +320,18 @@ void WaveParameters::GenerateRandomWaveType()
 	// Change the parameter wave type depending on the value 1 through 4
 	switch (randWaveType)
 	{
-	case 1:
-		parameters.waveType = sine;
-		break;
-	case 2:
-		parameters.waveType = square;
-		break;
-	case 3:
-		parameters.waveType = saw;
-		break;
-	case 4:
-		parameters.waveType = triangle;
-		break;
+		case 1:
+			parameters.waveType = sine;
+			break;
+		case 2:
+			parameters.waveType = square;
+			break;
+		case 3:
+			parameters.waveType = saw;
+			break;
+		case 4:
+			parameters.waveType = triangle;
+			break;
 	}
 
 }
