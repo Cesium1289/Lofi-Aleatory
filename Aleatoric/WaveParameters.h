@@ -36,14 +36,11 @@ class WaveParameters
 		void setVolume(float);
 		void setRamp(float);
 		void setWaveType(const std::string&);
-		void setScaleType(const std::string&);
 		void setRandom(bool);
 		float GetRamp();
 		float GetBPM();
 		void RampSamples(vector<sf::Int16>& sample, float frac);
-		float WaveFunc(float pos, int type);
 		void display();
-		int TestAddMethod(int a, int b);
 	private:
 		struct Parameters
 		{
@@ -52,7 +49,6 @@ class WaveParameters
 			float ramp;
 			float volume;
 			char key;
-			int scale;
 			waveEnum waveType;
 			bool random;
 		};
@@ -62,7 +58,6 @@ class WaveParameters
 		void MapMidiValues();
 		bool IsValidBeatsPerMinute(float val)const;
 		bool IsValidRamp(float val)const;
-		bool IsValidAccent(float val)const;
 		bool IsValidVolume(float val)const;
 		bool IsValidRootKey(int val)const;
 };

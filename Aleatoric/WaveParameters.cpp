@@ -370,18 +370,6 @@ void WaveParameters::setWaveType(const std::string& type)
 		std::cout << "Invalid wave type";
 }
 
-void WaveParameters::setScaleType(const std::string& type)
-{
-	if (type == "major")
-		parameters.scale = 1;
-	else if (type == "minor")
-		parameters.scale = 2;
-	else if (type == "pent")
-		parameters.scale = 3;
-	else
-		std::cout << "Invalid scale type. Enter either 'major' or 'minor'";
-}
-
 void WaveParameters::setRandom(bool val)
 {
 	parameters.random = val;
