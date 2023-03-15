@@ -31,7 +31,7 @@ void WaveGenerator::playWave(WaveParameters& args, sf::SoundBuffer& lofiSample)
 }
 
 
-void WaveGenerator::stopWave() {
+void WaveGenerator::stopWave(sf::Sound& sound) {
 	if (sound.getStatus() == sf::Sound::Playing)
 		sound.stop();
 }

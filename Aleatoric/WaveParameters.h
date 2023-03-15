@@ -26,7 +26,12 @@ class WaveParameters
 		float ParseStringToFloat(string& arg);
 		int ParseStringToInt(string& arg);
 		void ParseStringToString(string& arg);
+		void GenerateRandomParameters();
+		void GenerateRandomRootKeyAndKey();
 		void GenerateRandomWave(float frequency, sf::SoundBuffer& Wave);
+		void GenerateRandomBeatsPerMinute();
+		void GenerateRandomRamp();
+		void GenerateRandomWaveType();
 		void setRootKey(int);
 		void setBPM(float);
 		void setVolume(float);
@@ -34,8 +39,10 @@ class WaveParameters
 		void setWaveType(const std::string&);
 		void setScaleType(const std::string&);
 		void setRandom(bool);
+		int GetRootKey();
 		float GetRamp();
 		float GetBPM();
+		int GetWaveType();
 		void RampSamples(vector<sf::Int16>& sample, float frac);
 		float WaveFunc(float pos, int type);
 		void display();
