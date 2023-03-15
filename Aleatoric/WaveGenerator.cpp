@@ -137,29 +137,6 @@ void WaveGenerator::CalculateFrequency(vector<float>&freqArray, vector<int>& sca
 	}
 }
 
-//Calculate the correct amplitude given a position in the sample for a given wave type.
-float WaveGenerator::WaveFunc(float pos, int waveType)
-{
-	//sine wave
-	if (waveType == 1)
-		return sin(pos * 2 * 3.14);
-
-	//triangle wave
-	else if (waveType == 2)
-		return 1 - fabs(pos - 0.5) * 4;
-
-	//square wave
-	else if (waveType == 3)
-		return (sin(pos * 3.14 * 2) > 0) ? 1.0 : -1.0;
-
-	//saw wave
-	else if (waveType == 4)
-		return pos * 2 - 1;
-
-	else
-		return -1.0;
-}
-
 //Calculate the beat time for the attack and release time for the note envelope
 void WaveGenerator::RampSamples(vector<sf::Int16>& sample, float frac)
 {
@@ -261,26 +238,3 @@ int WaveGenerator::CheckKeyValue(int rootKey, char& character)
 	return 1;
 }
 
-// Randomize a frequency, generate a random wave and store in a buffer
-void WaveGenerator::GenerateRandomWave(float frequency, sf::SoundBuffer &Wave)
-{
-    vector<sf::Int16> buffer;
-
-    // Create random BPM for wave
-    // EXTERNAL CITATION: https://stackoverflow.com/questions/686353/random-float-number-generation
-    srand(static_cast <unsigned> (time(0)));
-    float randBPM = 1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/240-1));
-    // Random wave type between 1 and 4
-    int randWaveType = rand() % 4 + 1;
-
-    for (size_t i = 0; i < NUM_SAMPLES; i++) {
-        float pos = fmod((static_cast<float>(i) * frequency) / NUM_SAMPLES, 1.0);
-        buffer.push_back(10000 * WaveFunc(pos, randWaveType) * 3.0f);
-    }
-
-    //ramp square wave sample
-    RampSamples(buffer, 0.5f);
-
-    //place sample into square wave buffer
-    Wave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (randBPM / 60));
-}

@@ -336,31 +336,6 @@ void WaveParameters::GenerateRandomWaveType()
 
 }
 
-
-void WaveParameters::GenerateRandomWave(float frequency, sf::SoundBuffer& Wave)
-{
-	std::vector<sf::Int16> buffer;
-
-	// Create random BPM for wave
-	// EXTERNAL CITATION: https://stackoverflow.com/questions/686353/random-float-number-generation
-	srand(static_cast <unsigned> (time(0)));
-	float randBPM = 1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 240 - 1));
-	// Random wave type between 1 and 4
-	int randWaveType = rand() % 4 + 1;
-
-	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		float pos = fmod((static_cast<float>(i) * frequency) / NUM_SAMPLES, 1.0);
-		buffer.push_back(10000 * WaveFunc(pos, randWaveType) * 3.0f);
-	}
-
-	//ramp square wave sample
-	RampSamples(buffer, 0.5f);
-
-	//place sample into square wave buffer
-	Wave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (randBPM / 60));
-}
-
-
 void WaveParameters::setRootKey(int rootKey)
 {
 	parameters.rootKey = rootKey;
@@ -423,23 +398,6 @@ float WaveParameters::GetBPM()
 	return parameters.beatsPerMinute;
 }
 
-float WaveParameters::WaveFunc(float pos, int type)
-{
-	//sine wave
-	if (type == 1)
-		return sin(pos * 2 * 3.14);
-	//square wave
-	else if (type == 2)
-		return (sin(pos * 3.14 * 2) > 0) ? 1.0 : -1.0;
-	//saw wave
-	else if (type == 3)
-		return pos * 2 - 1;
-	//triangle wave
-	else if (type == 4)
-		return 1 - fabs(pos - 0.5) * 4;
-	return 0;
-}
-
 void WaveParameters::display()
 {
 	cout << "\n-_-_-Values used-_-_-\n";
@@ -495,7 +453,3 @@ void WaveParameters::RampSamples(vector<sf::Int16>& sample, float frac)
 	}
 }
 
-int WaveParameters::TestAddMethod(int a, int b)
-{
-	return a + b;
-}
