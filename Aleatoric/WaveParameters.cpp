@@ -136,11 +136,6 @@ bool WaveParameters::ParseArguments(int argc, char* argv[])
 			ParseStringToString(argvArray[i]);
 			setWaveType(argvArray[i]);
 		}
-		else if (!argvArray[i].find("--scale"))
-		{
-			ParseStringToString(argvArray[i]);
-			setScaleType(argvArray[i]);
-		}
 		else if (!argvArray[i].find("--random"))
 		{	
 			ParseStringToString(argvArray[i]);
