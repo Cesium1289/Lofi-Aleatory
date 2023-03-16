@@ -19,9 +19,6 @@ int main(int argc, char** argv)
 	bool randomize = false;
 	bool playing = false;
 
-	sf::Texture emptyButtonTexture;
-	emptyButtonTexture.loadFromFile("Assets/emptyButtonSprite.png");
-	gui::SpriteButton* activeWaveButton = new gui::SpriteButton(emptyButtonTexture, emptyButtonTexture);
 
 	// Create the main window
 	sf::RenderWindow app(sf::VideoMode(1210, 840), "Lofi-Aleatory", sf::Style::Close);
@@ -48,6 +45,9 @@ int main(int argc, char** argv)
 	titleAndDescription->add(descriptionCard);
 
 	
+	sf::Texture emptyButtonTexture;
+	emptyButtonTexture.loadFromFile("Assets/emptyButtonSprite.png");
+	gui::SpriteButton* activeWaveButton = new gui::SpriteButton(emptyButtonTexture, emptyButtonTexture);
 
 	//Main interface
 	gui::HBoxLayout* main = menu.addHBoxLayout();
