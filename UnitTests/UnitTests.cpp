@@ -10,18 +10,6 @@ namespace UnitTests
 	TEST_CLASS(UnitTests)
 	{
 	public:
-		
-		TEST_METHOD(TestSimpleAdd)
-		{
-			int testA = 2;
-			int testB = 2;
-			int expected = 4;
-
-			// Actual Value
-			int actual = testA + testB;
-
-			Assert::AreEqual(expected, actual, L" Expected Sum: 4 ", LINE_INFO());
-		}
 
 		TEST_METHOD(TestValidRootKey) 
 		{
