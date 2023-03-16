@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <random>
 
-
 const int NUM_SAMPLES = 48000;
 const int NUM_KEYS = 7;
 const float MIN_BEATS_PER_MINUTE = 0.1f;
@@ -136,11 +135,6 @@ bool WaveParameters::ParseArguments(int argc, char* argv[])
 		{
 			ParseStringToString(argvArray[i]);
 			setWaveType(argvArray[i]);
-		}
-		else if (!argvArray[i].find("--scale"))
-		{
-			ParseStringToString(argvArray[i]);
-			setScaleType(argvArray[i]);
 		}
 		else if (!argvArray[i].find("--random"))
 		{	
@@ -337,30 +331,117 @@ void WaveParameters::GenerateRandomWaveType()
 
 }
 
-
-void WaveParameters::GenerateRandomWave(float frequency, sf::SoundBuffer& Wave)
+void WaveParameters::GenerateRandomRootKeyAndKey()
 {
-	std::vector<sf::Int16> buffer;
+	// RootKey 'a' values
+	int rootKeyA[] = { 21, 33, 45, 57, 69, 81, 93, 105 };
+	// RootKey 'b' values
+	int rootKeyB[] = { 23, 35, 47, 59, 71, 83, 95, 107 };
+	// RootKey 'c' values
+	int rootKeyC[] = { 24, 36, 48, 60, 72, 84, 96, 108 };
+	// RootKey 'd' values
+	int rootKeyD[] = { 26, 38, 50, 62, 74, 86, 98, 110 };
+	// RootKey 'e' values
+	int rootKeyE[] = { 28, 40, 52, 64, 76, 88, 100, 112 };
+	// RootKey 'f' values
+	int rootKeyF[] = { 29, 41, 53, 65, 77, 89, 101, 113 };
+	// RootKey 'g' values
+	int rootKeyG[] = { 31, 43, 55, 67, 79, 91, 103, 115 };
 
-	// Create random BPM for wave
-	// EXTERNAL CITATION: https://stackoverflow.com/questions/686353/random-float-number-generation
-	srand(static_cast <unsigned> (time(0)));
-	float randBPM = 1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 240 - 1));
-	// Random wave type between 1 and 4
-	int randWaveType = rand() % 4 + 1;
 
-	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		float pos = fmod((static_cast<float>(i) * frequency) / NUM_SAMPLES, 1.0);
-		buffer.push_back(10000 * WaveFunc(pos, randWaveType) * 3.0f);
+	// Random integer between values 1 and 7
+	int randKey = rand() % 7 + 1;
+
+	// Random integer between values 0 and 7 
+	// This random value is used to select a random index out of each rootKey array with their corresponding value
+	int randRootKey = rand() % 8;
+
+	// Change the parameter key type depending on the value 1 through 7 along with a random rootKey value
+	switch (randKey)
+	{
+		case 1:
+			parameters.key = 'a';
+			parameters.rootKey = rootKeyA[randRootKey];
+			break;
+		case 2:
+			parameters.key = 'b';
+			parameters.rootKey = rootKeyB[randRootKey];
+			break;
+		case 3:
+			parameters.key = 'c';
+			parameters.rootKey = rootKeyC[randRootKey];
+			break;
+		case 4:
+			parameters.key = 'd';
+			parameters.rootKey = rootKeyD[randRootKey];
+			break;
+		case 5:
+			parameters.key = 'e';
+			parameters.rootKey = rootKeyE[randRootKey];
+			break;
+		case 6:
+			parameters.key = 'f';
+			parameters.rootKey = rootKeyF[randRootKey];
+			break;
+		case 7:
+			parameters.key = 'g';
+			parameters.rootKey = rootKeyG[randRootKey];
+			break;
 	}
 
-	//ramp square wave sample
-	RampSamples(buffer, 0.5f);
-
-	//place sample into square wave buffer
-	Wave.loadFromSamples(&buffer[0], buffer.size(), 1, NUM_SAMPLES * (randBPM / 60));
 }
 
+void WaveParameters::GenerateRandomBeatsPerMinute()
+{
+	// Use <random> library to create a random range in floats for bpm (0.1f to 75.0f)
+	std::random_device randDevice;
+	std::mt19937 generator(randDevice());
+	std::uniform_real_distribution<float> distribution(0.1f, 75.0f);
+
+	// Random volume
+	float randBPM = distribution(generator);
+
+	// Setting random WaveParameter to the random bpm
+	parameters.beatsPerMinute = randBPM;
+}
+
+void WaveParameters::GenerateRandomRamp()
+{
+	// Use <random> library to create a random range in floats for ramp (0.0f to 0.5f)
+	std::random_device randDevice;
+	std::mt19937 generator(randDevice());
+	std::uniform_real_distribution<float> distribution(0.0f, 0.5f);
+
+	// Random ramp 
+	float randRamp = distribution(generator);
+
+	// Setting random WaveParameter to the random ramp
+	parameters.beatsPerMinute = randRamp;
+}
+
+void WaveParameters::GenerateRandomWaveType()
+{
+	// Random integer between values 1 and 4
+	int randWaveType = rand() % 4 + 1;
+
+	// Change the parameter wave type depending on the value 1 through 4
+	switch (randWaveType)
+	{
+		case 1:
+			parameters.waveType = sine;
+			break;
+		case 2:
+			parameters.waveType = square;
+			break;
+		case 3:
+			parameters.waveType = saw;
+			break;
+		case 4:
+			parameters.waveType = triangle;
+			break;
+	}
+
+}
 
 void WaveParameters::setRootKey(int rootKey)
 {
@@ -396,18 +477,6 @@ void WaveParameters::setWaveType(const std::string& type)
 		std::cout << "Invalid wave type";
 }
 
-void WaveParameters::setScaleType(const std::string& type)
-{
-	if (type == "major")
-		parameters.scale = 1;
-	else if (type == "minor")
-		parameters.scale = 2;
-	else if (type == "pent")
-		parameters.scale = 3;
-	else
-		std::cout << "Invalid scale type. Enter either 'major' or 'minor'";
-}
-
 void WaveParameters::setRandom(bool val)
 {
 	parameters.random = val;
@@ -433,23 +502,6 @@ int WaveParameters::GetRootKey()
 int WaveParameters::GetWaveType()
 {
 	return parameters.waveType;
-}
-
-float WaveParameters::WaveFunc(float pos, int type)
-{
-	//sine wave
-	if (type == 1)
-		return sin(pos * 2 * 3.14);
-	//square wave
-	else if (type == 2)
-		return (sin(pos * 3.14 * 2) > 0) ? 1.0 : -1.0;
-	//saw wave
-	else if (type == 3)
-		return pos * 2 - 1;
-	//triangle wave
-	else if (type == 4)
-		return 1 - fabs(pos - 0.5) * 4;
-	return 0;
 }
 
 void WaveParameters::display()
@@ -506,9 +558,3 @@ void WaveParameters::RampSamples(vector<sf::Int16>& sample, float frac)
 		--n;
 	}
 }
-
-int WaveParameters::TestAddMethod(int a, int b)
-{
-	return a + b;
-}
-
