@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	bool playing = false;
 
 	sf::Texture emptyButtonTexture;
-	emptyButtonTexture.loadFromFile("Assets/emptyButtonSprites");
+	emptyButtonTexture.loadFromFile("Assets/emptyButtonSprite.png");
 	gui::SpriteButton* activeWaveButton = new gui::SpriteButton(emptyButtonTexture, emptyButtonTexture);
 
 	// Create the main window

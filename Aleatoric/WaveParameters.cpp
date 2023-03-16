@@ -209,9 +209,6 @@ void WaveParameters::GenerateRandomParameters()
 	// Generate random beats per minute from 0.0 to 0.5
 	GenerateRandomRamp();
 
-	// Keep volume at 5 so it is audible every time random sound is created
-	parameters.volume = 5.0f;
-
 	// Generate random wave type e.g. sine, square, saw, or triangle
 	GenerateRandomWaveType();
 
