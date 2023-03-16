@@ -37,8 +37,10 @@ class WaveParameters
 		void setRamp(float);
 		void setWaveType(const std::string&);
 		void setRandom(bool);
+		int GetRootKey();
 		float GetRamp();
 		float GetBPM();
+		int GetWaveType();
 		void RampSamples(vector<sf::Int16>& sample, float frac);
 		void display();
 	private:

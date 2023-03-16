@@ -209,14 +209,64 @@ void WaveParameters::GenerateRandomParameters()
 	// Generate random beats per minute from 0.0 to 0.5
 	GenerateRandomRamp();
 
-	// Keep volume at 5 so it is audible every time random sound is created
-	parameters.volume = 5.0f;
-
 	// Generate random wave type e.g. sine, square, saw, or triangle
 	GenerateRandomWaveType();
 
 	// Set random value boolean to true everytime this method is called
 	parameters.random = true;
+}
+
+
+void WaveParameters::GenerateRandomBeatsPerMinute()
+{
+	// Use <random> library to create a random range in floats for bpm (20.f to 240.0f)
+	std::random_device randDevice;
+	std::mt19937 generator(randDevice());
+	std::uniform_real_distribution<float> distribution(20.0f, 240.0f);
+
+	// Random volume
+	float randBPM = distribution(generator);
+
+	// Setting random WaveParameter to the random bpm
+	parameters.beatsPerMinute = randBPM;
+}
+
+void WaveParameters::GenerateRandomRamp()
+{
+	// Use <random> library to create a random range in floats for ramp (0.0f to 0.5f)
+	std::random_device randDevice;
+	std::mt19937 generator(randDevice());
+	std::uniform_real_distribution<float> distribution(0.0f, 0.5f);
+
+	// Random ramp 
+	float randRamp = distribution(generator);
+
+	// Setting random WaveParameter to the random ramp
+	parameters.ramp = randRamp;
+}
+
+void WaveParameters::GenerateRandomWaveType()
+{
+	// Random integer between values 1 and 4
+	int randWaveType = rand() % 4 + 1;
+
+	// Change the parameter wave type depending on the value 1 through 4
+	switch (randWaveType)
+	{
+	case 1:
+		parameters.waveType = sine;
+		break;
+	case 2:
+		parameters.waveType = square;
+		break;
+	case 3:
+		parameters.waveType = saw;
+		break;
+	case 4:
+		parameters.waveType = triangle;
+		break;
+	}
+
 }
 
 void WaveParameters::GenerateRandomRootKeyAndKey()
@@ -279,58 +329,6 @@ void WaveParameters::GenerateRandomRootKeyAndKey()
 
 }
 
-void WaveParameters::GenerateRandomBeatsPerMinute()
-{
-	// Use <random> library to create a random range in floats for bpm (0.1f to 75.0f)
-	std::random_device randDevice;
-	std::mt19937 generator(randDevice());
-	std::uniform_real_distribution<float> distribution(0.1f, 75.0f);
-
-	// Random volume
-	float randBPM = distribution(generator);
-
-	// Setting random WaveParameter to the random bpm
-	parameters.beatsPerMinute = randBPM;
-}
-
-void WaveParameters::GenerateRandomRamp()
-{
-	// Use <random> library to create a random range in floats for ramp (0.0f to 0.5f)
-	std::random_device randDevice;
-	std::mt19937 generator(randDevice());
-	std::uniform_real_distribution<float> distribution(0.0f, 0.5f);
-
-	// Random ramp 
-	float randRamp = distribution(generator);
-
-	// Setting random WaveParameter to the random ramp
-	parameters.beatsPerMinute = randRamp;
-}
-
-void WaveParameters::GenerateRandomWaveType()
-{
-	// Random integer between values 1 and 4
-	int randWaveType = rand() % 4 + 1;
-
-	// Change the parameter wave type depending on the value 1 through 4
-	switch (randWaveType)
-	{
-		case 1:
-			parameters.waveType = sine;
-			break;
-		case 2:
-			parameters.waveType = square;
-			break;
-		case 3:
-			parameters.waveType = saw;
-			break;
-		case 4:
-			parameters.waveType = triangle;
-			break;
-	}
-
-}
-
 void WaveParameters::setRootKey(int rootKey)
 {
 	parameters.rootKey = rootKey;
@@ -379,6 +377,17 @@ float WaveParameters::GetRamp()
 float WaveParameters::GetBPM()
 {
 	return parameters.beatsPerMinute;
+}
+
+
+int WaveParameters::GetRootKey()
+{
+	return parameters.rootKey;
+}
+
+int WaveParameters::GetWaveType()
+{
+	return parameters.waveType;
 }
 
 void WaveParameters::display()
@@ -435,4 +444,3 @@ void WaveParameters::RampSamples(vector<sf::Int16>& sample, float frac)
 		--n;
 	}
 }
-
