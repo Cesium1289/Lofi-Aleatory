@@ -41,6 +41,8 @@ class WaveParameters
 		float GetRamp();
 		float GetBPM();
 		int GetWaveType();
+		bool GetRandom();
+		char GetKey();
 		void RampSamples(vector<sf::Int16>& sample, float frac);
 		void display();
 	private:
