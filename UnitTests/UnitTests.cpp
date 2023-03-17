@@ -125,5 +125,54 @@ namespace UnitTests
 
 		}
 
+		TEST_METHOD(setRootKey)
+		{
+			WaveParameters Wp;
+			int expected = 54;
+		
+			Wp.setRootKey(expected);
+			int actual = Wp.GetRootKey();
+
+			Assert::AreEqual(expected, actual, L" Expected Integer: 54 ", LINE_INFO());
+		}
+		TEST_METHOD(setBPM)
+		{
+			WaveParameters Wp;
+			float expected = 20.3f;
+
+			Wp.setBPM(expected);
+			float actual = Wp.GetBPM();
+
+			Assert::AreEqual(expected, actual, L" Expected Float: 20.3 ", LINE_INFO());
+		}
+		TEST_METHOD(setRamp)
+		{
+			WaveParameters Wp;
+			float expected = .2f;
+
+			Wp.setRamp(expected);
+			float actual = Wp.GetRamp();
+
+			Assert::AreEqual(expected, actual, L" Expected Float: 0.2 ", LINE_INFO());
+
+		}
+		TEST_METHOD(setWaveType)
+		{
+			enum waveEnum {
+				sine,
+				triangle,
+				square,
+				saw
+			};
+			WaveParameters Wp;
+			string expectedString = "sine";
+			int expected = sine;
+
+			Wp.setWaveType(expectedString);
+			int actual = Wp.GetWaveType();
+
+			Assert::AreEqual(expected, actual, L" Expected integer: 0 ", LINE_INFO());
+		}
+
 	};
 }
