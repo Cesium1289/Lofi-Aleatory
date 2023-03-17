@@ -174,5 +174,96 @@ namespace UnitTests
 			Assert::AreEqual(expected, actual, L" Expected integer: 0 ", LINE_INFO());
 		}
 
+		TEST_METHOD(GenerateRandomParameters)
+		{
+			WaveParameters WP;
+			bool setFalse = false;
+			WP.setRandom(setFalse);
+
+			// Should be true after this call
+			WP.GenerateRandomParameters();
+			
+			bool expected = WP.GetRandom();
+
+			Assert::AreEqual(expected, true, L" Expected Boolean: True ", LINE_INFO());
+
+			
+		}
+		TEST_METHOD(GenerateRandomBeatsPerMinute) 
+		{
+			WaveParameters WP;
+			
+			float MIN_BPM = 20.0f;
+			float MAX_BPM = 240.0f;
+			
+			WP.GenerateRandomBeatsPerMinute();
+
+			float actual = WP.GetBPM();
+
+			Assert::IsTrue(actual >= MIN_BPM && actual <= MAX_BPM, L" BPM should be in range 20.0f to 240.0f ", LINE_INFO());
+
+		}
+
+		TEST_METHOD(GenerateRandomRamp)
+		{
+			WaveParameters WP;
+
+			float MIN_RAMP = 0.0f;
+			float MAX_RAMP = 0.5f;
+
+			WP.GenerateRandomRamp();
+
+			float actual = WP.GetRamp();
+
+			Assert::IsTrue(actual >= MIN_RAMP && actual <= MAX_RAMP, L" Ramp should be in range 0.0f to 0.5f ", LINE_INFO());
+
+		}
+
+		TEST_METHOD(GenerateRandomWaveType)
+		{
+			WaveParameters WP;
+
+			enum waveEnum {
+				sine,
+				triangle,
+				square,
+				saw
+			};
+
+			int expectedSine = sine;
+			int expectedTriangle = triangle;
+			int expectedSquare = square;
+			int expectedSaw = saw;
+
+			WP.GenerateRandomWaveType();
+
+			int actual = WP.GetWaveType();
+
+			
+			Assert::IsTrue(actual == expectedSine 
+						|| actual == expectedTriangle 
+						|| actual == expectedSquare 
+						|| actual == expectedSaw, 
+				L" WaveType should be sine, triangle, square or saw", LINE_INFO());
+				
+		}
+
+		TEST_METHOD(GenerateRandomRootKeyAndKey)
+		{
+			WaveParameters WP;
+			int minRootKey = 21;
+			int maxRootKey = 115;
+
+			WP.GenerateRandomRootKeyAndKey();
+
+			char expectedKey = WP.GetKey();
+			int expectedRootkey = WP.GetRootKey();
+
+			Assert::IsTrue(expectedKey >= 'a' && expectedKey <= 'g', L" Key should be in range 'a' to 'g' ", LINE_INFO());
+			Assert::IsTrue(expectedRootkey >= minRootKey && expectedRootkey <= maxRootKey, L" RootKey should be in range '21' to '115' ", LINE_INFO());
+		}
+		
+
+
 	};
 }

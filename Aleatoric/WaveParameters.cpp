@@ -390,6 +390,16 @@ int WaveParameters::GetWaveType()
 	return parameters.waveType;
 }
 
+bool WaveParameters::GetRandom()
+{
+	return parameters.random;
+}
+
+char WaveParameters::GetKey()
+{
+	return parameters.key;
+}
+
 void WaveParameters::display()
 {
 	cout << "\n-_-_-Values used-_-_-\n";
