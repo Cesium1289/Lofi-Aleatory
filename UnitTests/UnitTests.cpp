@@ -11,7 +11,7 @@ namespace UnitTests
 	{
 	public:
 
-		TEST_METHOD(TestValidRootKey) 
+		TEST_METHOD(TestValidRootKey)
 		{
 			WaveParameters WP;
 
@@ -33,7 +33,7 @@ namespace UnitTests
 			float validVolume = 0.1f;
 			bool expectedTrue = true;
 			bool actualTrue = true;
-			
+
 			// Test if valid beats per minute value returns true
 			//bool actualTrue = WP.IsValidBeatsPerMinute(validVolume);
 
@@ -129,7 +129,7 @@ namespace UnitTests
 		{
 			WaveParameters Wp;
 			int expected = 54;
-		
+
 			Wp.setRootKey(expected);
 			int actual = Wp.GetRootKey();
 
@@ -182,20 +182,20 @@ namespace UnitTests
 
 			// Should be true after this call
 			WP.GenerateRandomParameters();
-			
+
 			bool expected = WP.GetRandom();
 
 			Assert::AreEqual(expected, true, L" Expected Boolean: True ", LINE_INFO());
 
-			
+
 		}
-		TEST_METHOD(GenerateRandomBeatsPerMinute) 
+		TEST_METHOD(GenerateRandomBeatsPerMinute)
 		{
 			WaveParameters WP;
-			
+
 			float MIN_BPM = 20.0f;
 			float MAX_BPM = 240.0f;
-			
+
 			WP.GenerateRandomBeatsPerMinute();
 
 			float actual = WP.GetBPM();
@@ -239,13 +239,13 @@ namespace UnitTests
 
 			int actual = WP.GetWaveType();
 
-			
-			Assert::IsTrue(actual == expectedSine 
-						|| actual == expectedTriangle 
-						|| actual == expectedSquare 
-						|| actual == expectedSaw, 
+
+			Assert::IsTrue(actual == expectedSine
+				|| actual == expectedTriangle
+				|| actual == expectedSquare
+				|| actual == expectedSaw,
 				L" WaveType should be sine, triangle, square or saw", LINE_INFO());
-				
+
 		}
 
 		TEST_METHOD(GenerateRandomRootKeyAndKey)
@@ -262,8 +262,102 @@ namespace UnitTests
 			Assert::IsTrue(expectedKey >= 'a' && expectedKey <= 'g', L" Key should be in range 'a' to 'g' ", LINE_INFO());
 			Assert::IsTrue(expectedRootkey >= minRootKey && expectedRootkey <= maxRootKey, L" RootKey should be in range '21' to '115' ", LINE_INFO());
 		}
-		
 
+
+		TEST_METHOD(GetRamp)
+		{
+			WaveParameters Wp;
+			float expected = 0.5;
+
+			Wp.setRamp(expected);
+			float actual = Wp.GetRamp();
+
+			Assert::AreEqual(expected, actual, L" Expected Float: 0.5 ", LINE_INFO());
+		}
+
+		TEST_METHOD(GetRootKey)
+		{
+			WaveParameters Wp;
+			int expected = 120;
+
+			Wp.setRootKey(expected);
+			int actual = Wp.GetRootKey();
+
+			Assert::AreEqual(expected, actual, L" Expected Integer: 120 ", LINE_INFO());
+		}
+
+		TEST_METHOD(GetBPM)
+		{
+			WaveParameters Wp;
+			int expected = 60;
+
+			Wp.setBPM(expected);
+			int actual = Wp.GetBPM();
+
+			Assert::AreEqual(expected, actual, L" Expected Integer: 60 ", LINE_INFO());
+		}
+
+		TEST_METHOD(GetWaveType)
+		{
+			WaveParameters Wp;
+			string sine = "sine";
+			string saw = "saw";
+			string square = "square";
+			string triangle = "triangle";
+
+
+			int expected = 0;
+			Wp.setWaveType(sine);
+			int actual = Wp.GetWaveType();
+			Assert::AreEqual(expected, actual, L" Expected Integer: 0 ", LINE_INFO());
+
+			expected = 1;
+			Wp.setWaveType(triangle);
+			actual = Wp.GetWaveType();
+			Assert::AreEqual(expected, actual, L" Expected Integer: 1 ", LINE_INFO());
+
+			expected = 2;
+			Wp.setWaveType(square);
+			actual = Wp.GetWaveType();
+			Assert::AreEqual(expected, actual, L" Expected Integer: 2 ", LINE_INFO());
+
+			expected = 3;
+			Wp.setWaveType(saw);
+			actual = Wp.GetWaveType();
+			Assert::AreEqual(expected, actual, L" Expected Integer: 3 ", LINE_INFO());
+		}
+
+		TEST_METHOD(GetRandom)
+		{
+			WaveParameters Wp;
+
+			bool expected = false;
+			Wp.setRandom(expected);
+			bool actual = Wp.GetRandom();
+
+			Assert::AreEqual(expected, actual, L" Expected boolean: false ", LINE_INFO());
+
+			expected = true;
+			Wp.setRandom(expected);
+			actual = Wp.GetRandom();
+			Assert::AreEqual(expected, actual, L" Expected boolean: true ", LINE_INFO());
+		}
+
+		TEST_METHOD(GetKey)
+		{
+			WaveParameters Wp;
+
+			char expected = 'a';
+			Wp.SetRootKeyCharacter(21);
+			char actual = Wp.GetKey();
+
+			Assert::AreEqual(expected, actual, L" Expected char: a ", LINE_INFO());
+
+			expected = 'g';
+			Wp.SetRootKeyCharacter(115);
+			actual = Wp.GetKey();
+			Assert::AreEqual(expected, actual, L" Expected char: g ", LINE_INFO());
+		}
 
 	};
 }
